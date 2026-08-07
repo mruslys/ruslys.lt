@@ -25,11 +25,17 @@
         }
 
         :root{
-            --green:#22C55E;
-            --green-hover:#16A34A;
+            --green:#22C55E; /* Nebenaudojama, palikta archyvui */
+            --green-hover:#16A34A; /* Nebenaudojama, palikta archyvui */
             --text:#111827;
             --muted:#6B7280;
             --bg:#FFFFFF;
+            /* Naujos juodai baltos spalvos */
+            --call-bg: #000000;
+            --call-bg-hover: #333333;
+            --call-icon: #FFFFFF;
+            --shadow-color: rgba(0,0,0,.15);
+            --avatar-shadow: rgba(0,0,0,.08);
         }
 
         body{
@@ -56,7 +62,7 @@
             object-fit:cover;
             display:block;
             margin:0 auto 28px;
-            box-shadow:0 10px 30px rgba(0,0,0,.08);
+            box-shadow:0 10px 30px var(--avatar-shadow);
         }
 
         h1{
@@ -79,17 +85,20 @@
             display:flex;
             justify-content:center;
             align-items:center;
-            background:var(--green);
+            /* Pakeista į juodą foną */
+            background:var(--call-bg);
             border-radius:50%;
             text-decoration:none;
             transition:.2s ease;
-            box-shadow:0 10px 30px rgba(34,197,94,.25);
+            /* Subtilesnis, pilkas šešėlis */
+            box-shadow:0 10px 30px var(--shadow-color);
         }
 
         .call-button:hover{
-            background:var(--green-hover);
+            /* Šiek tiek šviesesnė juoda spalva hover būsenai */
+            background:var(--call-bg-hover);
             transform:translateY(-2px);
-            box-shadow:0 16px 40px rgba(34,197,94,.35);
+            box-shadow:0 16px 40px var(--shadow-color);
         }
 
         .call-button:active{
@@ -100,6 +109,8 @@
             width:38px;
             height:38px;
             display:block;
+            /* Pakeista ikonos spalva į baltą, kad matytųsi juodame fone */
+            filter: brightness(0) invert(1);
         }
     </style>
 
