@@ -14,94 +14,75 @@
     <link rel="manifest" href="/favicon/site.webmanifest">
 
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        *{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
 
-        body {
-            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: #fafafa;
-            color: #111;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-        }
+body{
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;
+    background:#fff;
+    color:#111;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+}
 
-        .card {
-            width: 90%;
-            max-width: 360px;
-            text-align: center;
-            padding: 40px 32px;
-        }
+.card{
+    width:320px;
+    text-align:center;
+}
 
-        .avatar {
-            width: 110px;
-            height: 110px;
-            border-radius: 50%;
-            object-fit: cover;
-            display: block;
-            margin: 0 auto 20px;
-            border: 3px solid #fff;
-            box-shadow: 0 8px 30px rgba(0,0,0,.08);
-        }
+.avatar{
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    object-fit:cover;
+    display:block;
+    margin:0 auto 28px;
+}
 
-        .icon {
-            margin-bottom: 24px;
-        }
+h1{
+    font-size:2rem;
+    font-weight:700;
+    margin-bottom:8px;
+    letter-spacing:-.03em;
+}
 
-        .icon img {
-            width: 56px;
-            height: 56px;
-            display: block;
-            margin: 0 auto;
-        }
+.phone{
+    color:#8e8e93;
+    font-size:1.1rem;
+    margin-bottom:36px;
+}
 
-        h1 {
-            font-size: 1.8rem;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
+.button{
+    display:block;
+    width:100%;
+    padding:17px 24px;
+    border-radius:18px;
+    background:#22C55E;
+    color:#fff;
+    text-decoration:none;
+    font-size:1.15rem;
+    font-weight:600;
+    transition:.2s;
+}
 
-        p {
-            color: #666;
-            line-height: 1.5;
-            margin-bottom: 28px;
-        }
+.button:hover{
+    background:#16A34A;
+}
 
-        .phone {
-            font-size: 1.15rem;
-            font-weight: 500;
-            margin-bottom: 30px;
-        }
+.button:active{
+    transform:scale(.98);
+}
 
-        .button {
-            display: inline-block;
-            padding: 15px 28px;
-            background: #22C55E;
-            color: #fff;
-            text-decoration: none;
-            font-weight: 600;
-            border-radius: 14px;
-            transition: background .2s ease, transform .2s ease;
-        }
-
-        .button:hover {
-            background: #16A34A;
-            transform: translateY(-1px);
-        }
-
-        .button:active {
-            transform: translateY(0);
-        }
-
-        .hint {
-            margin-top: 20px;
-            font-size: .9rem;
-            color: #999;
-        }
+.hint{
+    margin-top:22px;
+    color:#8e8e93;
+    font-size:.9rem;
+}
     </style>
 
     <script>
@@ -116,28 +97,21 @@
 
 <div class="card">
 
-    <img
-        src="/img/pfp.jpg"
-        alt="Mindaugas"
-        class="avatar">
+    <img src="/img/pfp.jpg" alt="Mindaugas" class="avatar">
 
-    <div class="icon">
-        <img src="/img/call.svg" alt="" aria-hidden="true">
+    <h1>Mindaugas</h1>
+
+    <div class="phone">
+        +370 616 00055
     </div>
-
-    <h1>Skambinti Mindaugui</h1>
-
-    <p>Jeigu skambutis neprasidėjo automatiškai, paspauskite mygtuką.</p>
-
-    <div class="phone">+370&nbsp;616&nbsp;00055</div>
 
     <a class="button" href="tel:+37061600055">
-        📞 Skambinti
+        Skambinti
     </a>
 
-    <div class="hint">
-        Atidarys telefono programėlę.
-    </div>
+    <p class="hint">
+        Jei skambutis neprasidėjo automatiškai.
+    </p>
 
 </div>
 
