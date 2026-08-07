@@ -25,28 +25,31 @@
         }
 
         :root{
-            --green:#22C55E; /* Nebenaudojama, palikta archyvui */
-            --green-hover:#16A34A; /* Nebenaudojama, palikta archyvui */
             --text:#111827;
             --muted:#6B7280;
             --bg:#FFFFFF;
-            /* Naujos juodai baltos spalvos */
             --call-bg: #000000;
             --call-bg-hover: #333333;
-            --call-icon: #FFFFFF;
             --shadow-color: rgba(0,0,0,.15);
             --avatar-shadow: rgba(0,0,0,.08);
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
         }
 
         body{
             font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,sans-serif;
             background:var(--bg);
             color:var(--text);
-            min-height:100vh;
             display:flex;
             justify-content:center;
             align-items:center;
             padding:24px;
+            /* Naudojame dvh (dynamic viewport height), o palaikymui pridedame fallbaką į min-height */
+            min-height: 100vh;
+            min-height: 100dvh;
         }
 
         .card{
@@ -85,17 +88,14 @@
             display:flex;
             justify-content:center;
             align-items:center;
-            /* Pakeista į juodą foną */
             background:var(--call-bg);
             border-radius:50%;
             text-decoration:none;
             transition:.2s ease;
-            /* Subtilesnis, pilkas šešėlis */
             box-shadow:0 10px 30px var(--shadow-color);
         }
 
         .call-button:hover{
-            /* Šiek tiek šviesesnė juoda spalva hover būsenai */
             background:var(--call-bg-hover);
             transform:translateY(-2px);
             box-shadow:0 16px 40px var(--shadow-color);
@@ -109,7 +109,6 @@
             width:38px;
             height:38px;
             display:block;
-            /* Pakeista ikonos spalva į baltą, kad matytųsi juodame fone */
             filter: brightness(0) invert(1);
         }
     </style>
