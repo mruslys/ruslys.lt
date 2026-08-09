@@ -121,17 +121,25 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
+        }
+        .contact-label {
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #777;
+            margin-bottom: 4px;
         }
         .phone-link {
-            font-size: 1.25rem;
-            color: var(--muted-color);
+            font-size: 1.5rem;
+            color: var(--text-color);
             text-decoration: none;
-            font-weight: 500;
+            font-weight: 700;
             transition: color 0.2s ease;
+            margin-bottom: 5px;
         }
         .phone-link:hover {
-            color: var(--text-color);
+            color: var(--accent-color);
             text-decoration: underline;
         }
 
@@ -139,7 +147,7 @@
         .call-button {
             width: 72px;
             height: 72px;
-            margin: 0 auto;
+            margin: 5px auto 0;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -270,7 +278,10 @@
 
             {% if site.phone %}
             <div class="contact-box">
-                <!-- Paprasta tekstinė nuoroda kopijavimui ir paspaudimui -->
+                <!-- Užrašas virš telefono -->
+                <div class="contact-label">Telefonas pasiteiravimui</div>
+
+                <!-- Didesnis ir ryškesnis telefonas kopijavimui ir paspaudimui -->
                 <a href="tel:{{ site.phone }}" class="phone-link">{{ site.phone }}</a>
                 
                 <!-- Apvalus skambinimo mygtukas su ikona -->
