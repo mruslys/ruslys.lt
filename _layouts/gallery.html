@@ -10,7 +10,7 @@
     <meta property="og:description" content="{{ page.description }}">
 
     <meta property="product:price:amount" content="{{ page.amount }}">
-    <meta property="product:price:currency" content="EUR">
+    <meta property="product:price:currency" content="{{ page.currency }}">
 
     <!-- Automatiškai randame pirmąją nuotrauką Open Graph žymoms -->
     {% assign image_exts = "jpg,jpeg,png,webp" | split: "," %}
