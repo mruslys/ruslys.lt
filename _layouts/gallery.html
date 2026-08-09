@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
+    <!-- Automatiškai randame pirmąją nuotrauką Open Graph žymoms -->
     {% assign image_exts = "jpg,jpeg,png,webp" | split: "," %}
     {% assign target_folder = page.url | remove: "index.html" %}
     {% assign first_image = "" %}
@@ -85,7 +86,7 @@
             transform: scale(1.05);
         }
 
-        /* Kainos blokas po galerija */
+        /* Kainos ir kontakto blokas po galerija */
         .price-section {
             background: #ffffff;
             border: 1px solid #e0e0e0;
@@ -106,6 +107,23 @@
             font-size: 3rem;
             font-weight: 800;
             color: #111;
+            margin-bottom: 20px;
+        }
+        .call-button {
+            display: inline-block;
+            background-color: #28a745;
+            color: #ffffff;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-decoration: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            transition: background-color 0.2s, transform 0.2s;
+            box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
+        }
+        .call-button:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
         }
 
         /* Lightbox (peržiūros lango) stiliai */
@@ -195,11 +213,17 @@
             {% endfor %}
         </div>
 
-        <!-- Kaina po galerija -->
-        {% if page.amount %}
+        <!-- Kaina ir skambinimo mygtukas po galerija -->
+        {% if page.amount or site.phone %}
         <div class="price-section">
+            {% if page.amount %}
             <div class="price-label">Kaina</div>
             <div class="price-value">{{ page.amount }} {{ page.currency | default: "EUR" }}</div>
+            {% endif %}
+
+            {% if site.phone %}
+            <a href="tel:{{ site.phone }}" class="call-button">Skambinti: {{ site.phone }}</a>
+            {% endif %}
         </div>
         {% endif %}
     </div>
