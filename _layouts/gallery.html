@@ -10,6 +10,20 @@
     <meta property="og:title" content="{{ page.title }}">
     <meta property="og:description" content="{{ page.description }}">
 
+    <!-- Automatiškai randame pirmąją nuotrauką Open Graph žymoms -->
+    {% assign image_exts = "jpg,jpeg,png,webp" | split: "," %}
+    {% assign target_folder = page.url | remove: "index.html" %}
+    {% assign first_image = "" %}
+    
+    {% for static_file in site.static_files %}
+        {% if static_file.path contains target_folder %}
+            {% assign ext = static_file.extname | remove: "." | downcase %}
+            {% if image_exts contains ext and first_image == "" %}
+                {% assign first_image = static_file.path | absolute_url %}
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+
     {% include favicon.html %}
     
     <style>
