@@ -54,6 +54,7 @@
             border-radius: 12px;
             background: #eee;
             border: 1px solid #ddd;
+            cursor: pointer;
         }
         .gallery-item img {
             width: 100%;
@@ -63,6 +64,43 @@
         }
         .gallery-item:hover img {
             transform: scale(1.05);
+        }
+
+        /* Lightbox (peržiūros lango) stiliai */
+        .lightbox {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .lightbox.active {
+            display: flex;
+        }
+        .lightbox img {
+            max-width: 90%;
+            max-height: 90vh;
+            border-radius: 8px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+            object-fit: contain;
+        }
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            background: none;
+            border: none;
         }
     </style>
 </head>
@@ -84,7 +122,7 @@
                 {% if static_file.path contains target_folder %}
                     {% assign ext = static_file.extname | remove: "." | downcase %}
                     {% if image_exts contains ext %}
-                        <div class="gallery-item">
+                        <div class="gallery-item" onclick="openLightbox('{{ static_file.path | relative_url }}')">
                             <img src="{{ static_file.path | relative_url }}" alt="{{ page.title }}">
                         </div>
                     {% endif %}
@@ -92,6 +130,33 @@
             {% endfor %}
         </div>
     </div>
+
+    <!-- Peržiūros lango (Lightbox) elementas -->
+    <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+        <button class="lightbox-close">&times;</button>
+        <img id="lightbox-img" src="" alt="Padidinta nuotrauka">
+    </div>
+
+    <script>
+        function openLightbox(imageSrc) {
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            lightboxImg.src = imageSrc;
+            lightbox.classList.add('active');
+        }
+
+        function closeLightbox() {
+            const lightbox = document.getElementById('lightbox');
+            lightbox.classList.remove('active');
+        }
+
+        // Taip pat leidžia uždaryti paspaudus 'Esc' klavišą
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape") {
+                closeLightbox();
+            }
+        });
+    </script>
 
 </body>
 </html>
