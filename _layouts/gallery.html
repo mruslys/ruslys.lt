@@ -24,6 +24,10 @@
         {% endif %}
     {% endfor %}
 
+    {% if first_image != "" %}
+    <meta property="og:image" content="{{ first_image }}">
+    {% endif %}
+
     {% include favicon.html %}
     
     <style>
