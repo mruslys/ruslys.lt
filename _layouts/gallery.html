@@ -9,6 +9,9 @@
     <meta property="og:title" content="{{ page.title }}">
     <meta property="og:description" content="{{ page.description }}">
 
+    <meta property="product:price:amount" content="{{ page.amount }}">
+    <meta property="product:price:currency" content="EUR">
+
     <!-- Automatiškai randame pirmąją nuotrauką Open Graph žymoms -->
     {% assign image_exts = "jpg,jpeg,png,webp" | split: "," %}
     {% assign target_folder = page.url | remove: "index.html" %}
