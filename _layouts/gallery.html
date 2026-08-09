@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Meta įrašai iš YAML front-matter -->
+    <title>{{ page.title }} | {{ site.title }}</title>
+    <meta name="description" content="{{ page.description | default: site.description }}">
+    <meta property="og:title" content="{{ page.title }}">
+    <meta property="og:description" content="{{ page.description }}">
+    
+    <style>
+        :root {
+            --bg-color: #fcfcfc;
+            --text-color: #333;
+            --accent-color: #007bff;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        .header p {
+            font-size: 1.2rem;
+            color: #666;
+        }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .gallery-item {
+            aspect-ratio: 16/10;
+            overflow: hidden;
+            border-radius: 12px;
+            background: #eee;
+            border: 1px solid #ddd;
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Puslapio antraštė -->
+        <header class="header">
+            <h1>{{ page.title }}</h1>
+            <p>{{ page.description }}</p>
+        </header>
+
+        <!-- Paveikslėlių tinklelis -->
+        <div class="gallery-grid">
+            {% assign image_exts = "jpg,jpeg,png,webp" | split: "," %}
+            {% assign target_folder = page.url | remove: "index.html" %}
+            
+            {% for static_file in site.static_files %}
+                {% if static_file.path contains target_folder %}
+                    {% assign ext = static_file.extname | remove: "." | downcase %}
+                    {% if image_exts contains ext %}
+                        <div class="gallery-item">
+                            <img src="{{ static_file.path | relative_url }}" alt="{{ page.title }}">
+                        </div>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+</body>
+</html>
