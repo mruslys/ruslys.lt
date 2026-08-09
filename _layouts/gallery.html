@@ -86,7 +86,7 @@
             transform: scale(1.05);
         }
 
-        /* Kainos ir kontakto blokas po galerija */
+        /* Kainos ir kontaktų blokas po galerija */
         .price-section {
             background: #ffffff;
             border: 1px solid #e0e0e0;
@@ -107,13 +107,34 @@
             font-size: 3rem;
             font-weight: 800;
             color: #111;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+        }
+
+        /* Kontaktų zonos stiliai */
+        .contact-box {
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        .phone-link {
+            font-size: 1.3rem;
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+        .phone-link:hover {
+            opacity: 0.8;
+            text-decoration: underline;
         }
         .call-button {
             display: inline-block;
             background-color: #28a745;
             color: #ffffff;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 600;
             text-decoration: none;
             padding: 12px 30px;
@@ -213,7 +234,7 @@
             {% endfor %}
         </div>
 
-        <!-- Kaina ir skambinimo mygtukas po galerija -->
+        <!-- Kaina ir kontaktai po galerija -->
         {% if page.amount or site.phone %}
         <div class="price-section">
             {% if page.amount %}
@@ -222,7 +243,13 @@
             {% endif %}
 
             {% if site.phone %}
-            <a href="tel:{{ site.phone }}" class="call-button">Skambinti: {{ site.phone }}</a>
+            <div class="contact-box">
+                <!-- Paprasta tekstinė nuoroda kopijavimui ir paspaudimui -->
+                <a href="tel:{{ site.phone }}" class="phone-link">{{ site.phone }}</a>
+                
+                <!-- Skambinimo mygtukas -->
+                <a href="tel:{{ site.phone }}" class="call-button">Skambinti</a>
+            </div>
             {% endif %}
         </div>
         {% endif %}
