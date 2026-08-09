@@ -75,7 +75,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.85);
+            background-color: rgba(0, 0, 0, 0.9);
             justify-content: center;
             align-items: center;
             padding: 20px;
@@ -85,8 +85,8 @@
             display: flex;
         }
         .lightbox img {
-            max-width: 90%;
-            max-height: 90vh;
+            max-width: 85%;
+            max-height: 85vh;
             border-radius: 8px;
             box-shadow: 0 5px 25px rgba(0,0,0,0.5);
             object-fit: contain;
@@ -101,6 +101,32 @@
             cursor: pointer;
             background: none;
             border: none;
+            z-index: 10000;
+        }
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #fff;
+            font-size: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.3);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            z-index: 10000;
+            user-select: none;
+            transition: background 0.2s;
+        }
+        .lightbox-nav:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .lightbox-prev {
+            left: 20px;
+        }
+        .lightbox-next {
+            right: 20px;
         }
     </style>
 </head>
@@ -122,7 +148,7 @@
                 {% if static_file.path contains target_folder %}
                     {% assign ext = static_file.extname | remove: "." | downcase %}
                     {% if image_exts contains ext %}
-                        <div class="gallery-item" onclick="openLightbox('{{ static_file.path | relative_url }}')">
+                        <div class="gallery-item" onclick="openLightbox(this)">
                             <img src="{{ static_file.path | relative_url }}" alt="{{ page.title }}">
                         </div>
                     {% endif %}
@@ -131,29 +157,61 @@
         </div>
     </div>
 
-    <!-- Peržiūros lango (Lightbox) elementas -->
-    <div id="lightbox" class="lightbox" onclick="closeLightbox()">
-        <button class="lightbox-close">&times;</button>
+    <!-- Peržiūros langas (Lightbox) su rodyklėmis -->
+    <div id="lightbox" class="lightbox">
+        <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+        <button class="lightbox-nav lightbox-prev" onclick="changeSlide(-1)">&#10094;</button>
         <img id="lightbox-img" src="" alt="Padidinta nuotrauka">
+        <button class="lightbox-nav lightbox-next" onclick="changeSlide(1)">&#10095;</button>
     </div>
 
     <script>
-        function openLightbox(imageSrc) {
+        let currentIndex = 0;
+        let galleryImages = [];
+
+        // Surinkime visų nuotraukų adresus į masyvą puslapio užsikrovimo metu
+        document.addEventListener("DOMContentLoaded", function() {
+            const items = document.querySelectorAll('.gallery-item img');
+            galleryImages = Array.from(items).map(img => img.src);
+        });
+
+        function openLightbox(element) {
+            const img = element.querySelector('img');
+            const src = img.src;
+            currentIndex = galleryImages.indexOf(src);
+            
             const lightbox = document.getElementById('lightbox');
             const lightboxImg = document.getElementById('lightbox-img');
-            lightboxImg.src = imageSrc;
+            
+            lightboxImg.src = src;
             lightbox.classList.add('active');
         }
 
         function closeLightbox() {
-            const lightbox = document.getElementById('lightbox');
-            lightbox.classList.remove('active');
+            document.getElementById('lightbox').classList.remove('active');
         }
 
-        // Taip pat leidžia uždaryti paspaudus 'Esc' klavišą
+        function changeSlide(direction) {
+            currentIndex += direction;
+            if (currentIndex >= galleryImages.length) {
+                currentIndex = 0; // Jei pasiekė galą, grįžta prie pirmos
+            } else if (currentIndex < 0) {
+                currentIndex = galleryImages.length - 1; // Jei pirma, persuka į paskutinę
+            }
+            document.getElementById('lightbox-img').src = galleryImages[currentIndex];
+        }
+
+        // Klaviatūros valdymas (Esc, Kairėn, Dešinėn)
         document.addEventListener('keydown', function(event) {
+            const lightbox = document.getElementById('lightbox');
+            if (!lightbox.classList.contains('active')) return;
+
             if (event.key === "Escape") {
                 closeLightbox();
+            } else if (event.key === "ArrowLeft") {
+                changeSlide(-1);
+            } else if (event.key === "ArrowRight") {
+                changeSlide(1);
             }
         });
     </script>
