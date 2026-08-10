@@ -246,22 +246,36 @@
             right: 20px;
         }
 
-        /* Facebook įrašo konteinerio stilius */
+        /* Facebook įrašo konteineris */
         .fb-embed-section {
             background: #ffffff;
             border: 1px solid #e0e0e0;
             border-radius: 16px;
-            padding: 20px; /* Šiek tiek mažiau nei price-section, kad įrašas geriau tilptų */
+            padding: 20px;
             margin-top: 20px;
             display: flex;
-            justify-content: center; /* Centruoja įrašą bloke */
+            justify-content: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-            overflow: hidden; /* Svarbu, kad Facebook įrašas neišlįstų už apvalintų kampų */
+            overflow: hidden; /* Svarbu, kad neišlįstų už kampų */
         }
         
-        /* Užtikrina, kad Facebook įrašas bus responsyvus */
+        /* Užtikriname, kad pats įrašas prisitaikytų */
         .fb-post {
             max-width: 100%;
+            overflow: auto;
+        }
+        
+        /* Mobiliesiems ekranams (kai ekranas mažesnis nei 520px) */
+        @media (max-width: 520px) {
+            .fb-embed-section {
+                padding: 10px;
+            }
+            
+            /* Pakeičiam data-width per CSS arba leidžiame skalbuotis */
+            .fb-post iframe {
+                max-width: 100% !important;
+                width: 100% !important;
+            }
         }
         
     </style>
