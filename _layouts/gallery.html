@@ -245,6 +245,25 @@
         .lightbox-next {
             right: 20px;
         }
+
+        /* Facebook įrašo konteinerio stilius */
+        .fb-embed-section {
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 16px;
+            padding: 20px; /* Šiek tiek mažiau nei price-section, kad įrašas geriau tilptų */
+            margin-top: 20px;
+            display: flex;
+            justify-content: center; /* Centruoja įrašą bloke */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            overflow: hidden; /* Svarbu, kad Facebook įrašas neišlįstų už apvalintų kampų */
+        }
+        
+        /* Užtikrina, kad Facebook įrašas bus responsyvus */
+        .fb-post {
+            max-width: 100%;
+        }
+        
     </style>
 </head>
 <body>
