@@ -246,7 +246,7 @@
             right: 20px;
         }
 
-        /* Facebook įrašo konteineris */
+       /* Facebook įrašo konteineris */
         .fb-embed-section {
             background: #ffffff;
             border: 1px solid #e0e0e0;
@@ -255,26 +255,37 @@
             margin-top: 20px;
             display: flex;
             justify-content: center;
+            align-items: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.03);
             overflow: hidden; /* Svarbu, kad neišlįstų už kampų */
+            width: 100%;
+            box-sizing: border-box;
         }
         
-        /* Užtikriname, kad pats įrašas prisitaikytų */
+        /* Facebook įrašo rėmelio suvaldymas mobiliesiems ir kompiuteriams */
         .fb-post {
-            max-width: 100%;
-            overflow: auto;
+            width: 100% !important;
+            max-width: 500px;
+            display: flex;
+            justify-content: center;
+            overflow: hidden;
         }
         
-        /* Mobiliesiems ekranams (kai ekranas mažesnis nei 520px) */
+        .fb-post span, 
+        .fb-post iframe {
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+        
+        /* Jei ekranas labai mažas, kad nenukirptų dešinės pusės */
         @media (max-width: 520px) {
             .fb-embed-section {
                 padding: 10px;
             }
-            
-            /* Pakeičiam data-width per CSS arba leidžiame skalbuotis */
-            .fb-post iframe {
-                max-width: 100% !important;
-                width: 100% !important;
+            .fb-post {
+                transform: scale(0.9); /* Šiek tiek sumažina įrašą, kad telpa bet kokiame ekrane */
+                transform-origin: top center;
+                margin-bottom: -20px; /* Kompensuoja sumažinimo atsiradusį tarpą */
             }
         }
         
