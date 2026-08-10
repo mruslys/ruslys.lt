@@ -248,6 +248,8 @@
     </style>
 </head>
 <body>
+    <div id="fb-root"></div>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/lt_LT/sdk.js#xfbml=1&version=v18.0"></script>
 
     <div class="container">
         <!-- Puslapio antraštė -->
@@ -297,6 +299,17 @@
             {% endif %}
         </div>
         {% endif %}
+
+        {% if page.post_embed %}
+        <div class="fb-embed-section">
+            <div class="fb-post" 
+                 data-href="{{ page.post_embed }}" 
+                 data-width="500" 
+                 data-show-text="true">
+            </div>
+        </div>
+        {% endif %}
+        
     </div>
 
     <!-- Peržiūros langas (Lightbox) su rodyklėmis -->
