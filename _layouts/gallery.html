@@ -341,19 +341,17 @@
                 </div>
             </div>
             {% endif %}
+        </div>
+        {% endif %}
 
-            
-            {% if page.post_embed %}
-            <div class="fb-embed-section">
-                <div class="fb-post" 
-                     data-href="{{ page.post_embed }}" 
-                     data-width="500"
-                     data-lazy="true"
-                     data-show-text="true">
-                </div>
+        {% if page.post_embed %}
+        <div class="fb-embed-section">
+            <div class="fb-post" 
+                 data-href="{{ page.post_embed }}" 
+                 data-width="500"
+                 data-lazy="true"
+                 data-show-text="true">
             </div>
-            {% endif %}
-            
         </div>
         {% endif %}
         
