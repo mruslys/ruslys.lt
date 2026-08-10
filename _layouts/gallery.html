@@ -316,6 +316,16 @@
             {% endfor %}
         </div>
 
+        {% if page.post_embed %}
+        <div class="fb-embed-section">
+            <div class="fb-post" 
+                 data-href="{{ page.post_embed }}" 
+                 data-width="500" 
+                 data-show-text="true">
+            </div>
+        </div>
+        {% endif %}
+        
         <!-- Kaina ir kontaktai po galerija -->
         {% if page.amount or site.phone %}
         <div class="price-section">
@@ -342,41 +352,6 @@
             </div>
             {% endif %}
         </div>
-        {% endif %}
-
-        {% if page.post_embed %}
-        <div class="fb-embed-section">
-            <div class="fb-post" 
-                 data-href="{{ page.post_embed }}" 
-                 data-width="500" 
-                 data-show-text="true">
-            </div>
-        </div>
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                // Stebime, kada Facebook iframe įsikraus, ir pakeičiame "Žr. daugiau" nuorodą
-                const observer = new MutationObserver(function(mutations, obs) {
-                    const seeMoreLinks = document.querySelectorAll('a.see_more_link');
-                    if (seeMoreLinks.length > 0) {
-                        seeMoreLinks.forEach(link => {
-                            // Paimame esamą nuorodą ir padarome, kad atidarytų naujame lange tiesiogiai Facebook'e
-                            const originalHref = link.getAttribute('href');
-                            if (originalHref && !originalHref.startsWith('http')) {
-                                link.setAttribute('href', 'https://www.facebook.com' + originalHref);
-                            }
-                            link.setAttribute('target', '_blank');
-                            link.setAttribute('rel', 'noopener noreferrer');
-                        });
-                    }
-                });
-        
-                // Pradedame stebėti visą dokumentą, nes Facebook elementai kraunasi vėliau
-                observer.observe(document.body, {
-                    childList: true,
-                    subtree: true
-                });
-            });
-        </script>
         {% endif %}
         
     </div>
