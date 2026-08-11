@@ -38,14 +38,17 @@
     </style>
 </head>
 <body>
-    <div id="fb-root"></div>
-    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/lt_LT/sdk.js#xfbml=1&version=v18.0"></script>
+
+        {% if page.post_embed %}
+            <div id="fb-root"></div>
+            <script async defer crossorigin="anonymous" src="https://connect.facebook.net/lt_LT/sdk.js#xfbml=1&version=v18.0"></script>
+        {% endif %}
 
     <div class="container">
         
         <!-- Viršutinis mygtukas su M logo ir tekstu PARDUODU -->
         <div class="top-home-button-wrapper">
-            <a href="{{ site.home_url | default: site.url }}" class="top-home-button" title="Grįžti į pagrindinį">
+            <a href="{{ site.sell_url | default: site.url }}" class="top-home-button" title="Grįžti į pagrindinį">
                 <img src="{{ 'img/w512.png' | relative_url }}" alt="Logo">
             </a>
             <span class="top-logo-text">PARDUODU</span>
