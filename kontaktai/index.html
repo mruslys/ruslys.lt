@@ -29,8 +29,8 @@ description: "Susisiekti su Mindaugu R."
             --text-main: #111111;
             --text-muted: #666666;
             --accent: #111111;
-            --secondary-bg: #f8f8f8;
-            --secondary-hover: #f0f0f0;
+            --secondary-bg: #f5f5f7;
+            --secondary-hover: #ebebec;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -52,20 +52,20 @@ description: "Susisiekti su Mindaugu R."
 
         .card {
             background: var(--card-bg);
-            padding: 40px 28px;
-            border-radius: 32px;
+            padding: 44px 32px;
+            border-radius: 36px;
             width: 100%;
-            max-width: 360px;
+            max-width: 380px;
             text-align: center;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.04);
-            border: 1px solid rgba(0, 0, 0, 0.04);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         .avatar-container {
-            width: 90px;
-            height: 90px;
+            width: 96px;
+            height: 96px;
             margin: 0 auto 20px;
-            border-radius: 24px;
+            border-radius: 28px;
             overflow: hidden;
             background: #fcfcfc;
             border: 1px solid rgba(0, 0, 0, 0.06);
@@ -74,25 +74,25 @@ description: "Susisiekti su Mindaugu R."
         .avatar { width: 100%; height: 100%; object-fit: contain; display: block; }
 
         h1 { 
-            font-size: 1.2rem; 
-            font-weight: 600; 
+            font-size: 1.55rem; 
+            font-weight: 700; 
             margin-bottom: 6px; 
-            letter-spacing: -0.02em;
+            letter-spacing: -0.03em;
         }
 
         p { 
             color: var(--text-muted); 
-            font-size: 0.875rem; 
-            margin-bottom: 28px; 
+            font-size: 0.95rem; 
+            margin-bottom: 24px; 
         }
 
         .phone-link {
             display: block;
-            font-size: 1.65rem;
+            font-size: 1.75rem;
             font-weight: 700;
             color: var(--text-main);
             text-decoration: none;
-            margin-bottom: 28px;
+            margin-bottom: 24px;
             letter-spacing: -0.03em;
             font-variant-numeric: tabular-nums; 
             transition: opacity 0.2s;
@@ -104,16 +104,16 @@ description: "Susisiekti su Mindaugu R."
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 100%;
-            padding: 15px 24px;
+            padding: 16px 36px;
             background-color: var(--accent);
             color: #ffffff;
             border-radius: 100px;
-            font-size: 0.95rem;
+            font-size: 1rem;
             font-weight: 600;
             text-decoration: none;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             gap: 10px;
+            margin-bottom: 24px;
         }
 
         .btn-call:hover {
@@ -122,26 +122,24 @@ description: "Susisiekti su Mindaugu R."
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
         }
 
-        .btn-call svg { width: 18px; height: 18px; fill: currentColor; }
+        .btn-call svg { width: 20px; height: 20px; fill: currentColor; }
 
-        /* Antriniai veiksmai (SMS, WhatsApp, Telegram) */
         .secondary-actions {
             display: flex;
             justify-content: center;
-            gap: 12px;
-            margin-top: 20px;
+            gap: 14px;
         }
 
         .btn-social {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 48px;
-            height: 48px;
+            width: 56px;
+            height: 56px;
             border-radius: 50%;
             background-color: var(--secondary-bg);
             color: var(--text-main);
-            border: 1px solid rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.04);
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -152,8 +150,8 @@ description: "Susisiekti su Mindaugu R."
         }
 
         .btn-social svg {
-            width: 20px;
-            height: 20px;
+            width: 26px;
+            height: 26px;
             fill: currentColor;
         }
     </style>
