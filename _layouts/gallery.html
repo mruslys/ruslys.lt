@@ -51,15 +51,13 @@
             <a href="{{ site.sell_url | default: site.url }}" class="top-home-button" title="Grįžti į pagrindinį">
                 <img src="{{ 'img/w512.png' | relative_url }}" alt="Logo">
             </a>
-            <a href="{{ site.sell_url }}" title="Grįžti į parduodama sąrašą">
-                <span class="top-logo-text"> ← PARDUODU</span>
-            </a>
+                <span class="top-logo-text">PARDUODU</span>
             
         </div>
 
         <!-- Puslapio antraštė -->
         <header class="header">
-            <h1>{{ page.title }}</h1>
+            <h1><a href="{{ site.sell_url }}" title="Grįžti į parduodama sąrašą"><span class="top-logo-text"> ← </span> </a> {{ page.title }}</h1>
             <p>{{ page.description }}</p>
         </header>
 
