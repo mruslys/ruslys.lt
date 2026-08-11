@@ -63,11 +63,11 @@
         </div>
         
         <!-- Bendra informacinė kortelė -->
-        {% if page.amount or site.phone or content != blank %}
+        {% if page.amount or site.phone or page.content != blank %}
         <div class="info-card">
             
-            <!-- Dinaminis turinys (Aprašymas) -->
-            {% if content != blank %}
+            <!-- Dinaminis turinys (Aprašymas) - Rodyti tik jei yra turinys -->
+            {% if page.content != blank %}
             <div class="content-block">
                 <div class="section-label">Aprašymas</div>
                 <div class="page-content-body">
@@ -85,7 +85,12 @@
             {% endif %}
 
             <!-- Kontaktai -->
-            {% include phone-box.html %}
+            {% if site.phone %}
+            <div class="contact-box">
+                <div class="section-label">Susisiekite</div>
+                {% include phone-box.html %}
+            </div>
+            {% endif %}
             
         </div>
         {% endif %}
