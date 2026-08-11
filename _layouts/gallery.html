@@ -62,39 +62,36 @@
             {% endfor %}
         </div>
         
-        <!-- Bendra informacinė kortelė -->
-        {% if page.amount or site.phone or page.content != blank %}
+        <!-- Pagrindinė informacija (atskiras blokas) -->
+        {% assign cleaned_content = content | strip %}
+        {% if cleaned_content != "" %}
         <div class="info-card">
-            
-            {% assign cleaned_content = content | strip %}
-            {% if cleaned_content != "" %}
             <div class="content-block">
                 <div class="section-label">Pagrindinė informacija</div>
                 <div class="page-content-body">
                     {{ content }}
                 </div>
             </div>
-            {% endif %}
-
-            <!-- Kaina -->
-            {% if page.amount %}
-            <div class="content-box">
-                <div class="section-label">Kaina</div>
-                <div class="price-value">{{ page.amount }} {{ page.currency | default: "EUR" }}</div>
-            </div>
-            {% endif %}
-
-            <!-- Kontaktai -->
-            {% if site.phone %}
-            <div class="content-box">
-                <div class="section-label">Susisiekite</div>
-                {% include phone-box.html %}
-            </div>
-            {% endif %}
-            
         </div>
         {% endif %}
 
+        <!-- Kaina (atskiras blokas) -->
+        {% if page.amount %}
+        <div class="info-card">
+            <div class="section-label">Kaina</div>
+            <div class="price-value">{{ page.amount }} {{ page.currency | default: "EUR" }}</div>
+        </div>
+        {% endif %}
+
+        <!-- Kontaktai (atskiras blokas) -->
+        {% if site.phone %}
+        <div class="info-card">
+            <div class="section-label">Susisiekite</div>
+            {% include phone-box.html %}
+        </div>
+        {% endif %}
+
+        <!-- Facebook įrašo blokas -->
         {% if page.post_embed %}
         <div class="fb-embed-section">
             <div class="fb-post" 
