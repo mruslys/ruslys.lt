@@ -67,7 +67,6 @@
         {% if cleaned_content != "" %}
         <div class="info-card">
             <div class="content-block">
-                <div class="section-label">Pagrindinė informacija</div>
                 <div class="page-content-body">
                     {{ content }}
                 </div>
@@ -78,7 +77,6 @@
         <!-- Kaina (atskiras blokas) -->
         {% if page.amount %}
         <div class="info-card">
-            <div class="section-label">Kaina</div>
             <div class="price-value">{{ page.amount }} {{ page.currency | default: "EUR" }}</div>
         </div>
         {% endif %}
@@ -86,7 +84,6 @@
         <!-- Kontaktai (atskiras blokas) -->
         {% if site.phone %}
         <div class="info-card">
-            <div class="section-label">Susisiekite</div>
             {% include phone-box.html %}
         </div>
         {% endif %}
