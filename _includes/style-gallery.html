@@ -303,3 +303,30 @@ body {
 }
 .lightbox-prev { left: 20px; }
 .lightbox-next { right: 20px; }
+
+/* Kad ir Markdown lentelės, įterptos per {{ content }}, automatiškai atrodytų tvarkingai */
+.page-content-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+}
+.page-content-body th, 
+.page-content-body td {
+    padding: 10px 8px;
+    border-bottom: 1px solid #f0f0f0;
+    text-align: left;
+    font-size: 0.95rem;
+}
+.page-content-body tr:last-child th,
+.page-content-body tr:last-child td {
+    border-bottom: none;
+}
+.page-content-body th {
+    color: #6B7280;
+    font-weight: 500;
+    width: 35%;
+}
+.page-content-body td {
+    color: #333;
+    font-weight: 600;
+}
