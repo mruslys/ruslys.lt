@@ -1,38 +1,32 @@
 ---
 layout: main
 ---
-    <div class="shop-grid">
-        {% for product in site.pages %}
-            <!-- Filtruojame: puslapis turi būti /parduodu/ ir turėti layout: gallery -->
-            {% if product.url contains '/parduodu/' and product.layout == 'gallery' and product.url != '/parduodu/' %}
-                
-                <div class="product-card">
-                    <a href="{{ product.url | relative_url }}">
-                        <!-- Čia paimam pirmą nuotrauką iš to katalogo -->
-                        {% assign target_folder = product.url | remove: "index.html" %}
-                        {% assign found_img = false %}
-                        {% for static_file in site.static_files %}
-                            {% if static_file.path contains target_folder and found_img == false %}
-                                {% assign ext = static_file.extname | remove: "." | downcase %}
-                                {% if "jpg,jpeg,png,webp" contains ext %}
-                                    <img src="{{ static_file.path | relative_url }}" alt="{{ product.title }}">
-                                    {% assign found_img = true %}
-                                {% endif %}
+<div class="shop-grid">
+    {% for product in site.pages %}
+        <!-- Filtruojame: puslapis turi būti /parduodu/ ir turėti layout: gallery -->
+        {% if product.url contains '/parduodu/' and product.layout == 'gallery' and product.url != '/parduodu/' %}
+            
+            <div class="product-card">
+                <a href="{{ product.url | relative_url }}">
+                    <!-- Čia paimam pirmą nuotrauką iš to katalogo -->
+                    {% assign target_folder = product.url | remove: "index.html" %}
+                    {% assign found_img = false %}
+                    {% for static_file in site.static_files %}
+                        {% if static_file.path contains target_folder and found_img == false %}
+                            {% assign ext = static_file.extname | remove: "." | downcase %}
+                            {% if "jpg,jpeg,png,webp" contains ext %}
+                                <img src="{{ static_file.path | relative_url }}" alt="{{ product.title }}">
+                                {% assign found_img = true %}
                             {% endif %}
-                        {% endfor %}
-                        
-                        <h3>{{ product.title }}</h3>
-                        <p><strong>{{ product.amount }} {{ product.currency | default: "EUR" }}</strong></p>
-                    </a>
-                </div>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    <h3>{{ product.title }}</h3>
+                    <p><strong>{{ product.amount }} {{ product.currency | default: "EUR" }}</strong></p>
+                </a>
+            </div>
 
-            {% endif %}
-        {% endfor %}
-    </div>
+        {% endif %}
+    {% endfor %}
+</div>
 
-
-<style>
-    .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
-    .product-card { border: 1px solid #ddd; padding: 15px; text-align: center; }
-    .product-card img { max-width: 100%; height: auto; aspect-ratio: 1/1; object-fit: cover; }
-</style>
