@@ -69,7 +69,7 @@
             {% assign cleaned_content = content | strip %}
             {% if cleaned_content != "" %}
             <div class="content-block">
-                <div class="section-label">Aprašymas</div>
+                <div class="section-label">Pagrindinė informacija</div>
                 <div class="page-content-body">
                     {{ content }}
                 </div>
@@ -78,7 +78,7 @@
 
             <!-- Kaina -->
             {% if page.amount %}
-            <div class="price-block">
+            <div class="content-box">
                 <div class="section-label">Kaina</div>
                 <div class="price-value">{{ page.amount }} {{ page.currency | default: "EUR" }}</div>
             </div>
@@ -86,7 +86,7 @@
 
             <!-- Kontaktai -->
             {% if site.phone %}
-            <div class="contact-box">
+            <div class="content-box">
                 <div class="section-label">Susisiekite</div>
                 {% include phone-box.html %}
             </div>
