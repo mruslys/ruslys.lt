@@ -1,7 +1,7 @@
 ---
 layout: main
 ---
-<div class="container">    
+  
     <div class="shop-grid">
         {% for product in site.pages %}
             <!-- Filtruojame: puslapis turi būti /parduodu/ ir turėti layout: gallery -->
@@ -30,7 +30,7 @@ layout: main
             {% endif %}
         {% endfor %}
     </div>
-</div>
+
 
 <style>
     .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
