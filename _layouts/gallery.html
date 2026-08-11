@@ -66,8 +66,8 @@
         {% if page.amount or site.phone or page.content != blank %}
         <div class="info-card">
             
-            <!-- Dinaminis turinys (Aprašymas) - Rodyti tik jei yra turinys -->
-            {% if page.content != blank %}
+            {% assign cleaned_content = content | strip %}
+            {% if cleaned_content != "" %}
             <div class="content-block">
                 <div class="section-label">Aprašymas</div>
                 <div class="page-content-body">
