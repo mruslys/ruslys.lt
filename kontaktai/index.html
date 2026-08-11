@@ -7,93 +7,107 @@ description: "Mano telefono numeris."
 <html lang="lt">
 <head>
     <meta charset="UTF-8">
-    <title>{{ page.title }}</title>
+    <title>Susisiekti su manimi</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="format-detection" content="telephone=yes">
-    <meta name="robots" content="noindex, follow">
-    <meta name="description" content="{{ page.description }}">
+    <meta name="description" content="Mano telefono numeris.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #000000;
-            --card-bg: #111111;
+            --bg-color: #0a0a0a;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.1);
             --text-main: #ffffff;
-            --border-color: #333333;
-            --accent-bg: #ffffff;
-            --accent-text: #000000;
+            --text-muted: #a3a3a3;
+            --accent: #ffffff;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        html, body {
-            height: 100%;
-            height: 100dvh;
-            background-color: var(--bg-color);
-        }
-
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: var(--bg-color);
             color: var(--text-main);
+            min-height: 100dvh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
+            background-image: radial-gradient(circle at 50% -20%, #1a1a1a 0%, #0a0a0a 80%);
         }
 
         .card {
             background: var(--card-bg);
-            padding: 40px;
-            border-radius: 24px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 48px 32px;
+            border-radius: 32px;
             width: 100%;
-            max-width: 320px;
+            max-width: 360px;
             text-align: center;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--card-border);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
         .avatar-container {
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             margin: 0 auto 24px;
-            border-radius: 50%;
+            border-radius: 24px;
             overflow: hidden;
-            border: 2px solid var(--text-main);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            transform: rotate(-3deg);
+            transition: transform 0.3s ease;
         }
+
+        .avatar-container:hover { transform: rotate(0deg) scale(1.05); }
 
         .avatar { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-        h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 24px; color: var(--text-main); }
+        h1 { 
+            font-size: 1.25rem; 
+            font-weight: 600; 
+            margin-bottom: 8px; 
+            letter-spacing: -0.02em;
+        }
+
+        p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 32px; }
 
         .phone-link {
             display: block;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             font-weight: 700;
             color: var(--text-main);
             text-decoration: none;
-            margin-bottom: 32px;
-            letter-spacing: 0.5px;
+            margin-bottom: 40px;
+            letter-spacing: -0.04em;
+            transition: opacity 0.2s;
         }
 
-        .phone-link:hover { text-decoration: underline; }
+        .phone-link:hover { opacity: 0.8; }
 
         .btn-call {
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 64px;
-            height: 64px;
-            background-color: var(--accent-bg);
-            color: var(--accent-text);
-            border-radius: 50%;
-            margin: 0 auto;
+            padding: 16px 32px;
+            background-color: var(--accent);
+            color: #000;
+            border-radius: 100px;
+            font-weight: 600;
             text-decoration: none;
-            transition: transform 0.2s, opacity 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            gap: 12px;
         }
 
-        .btn-call:hover { transform: scale(1.1); opacity: 0.9; }
+        .btn-call:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 255, 255, 0.2);
+        }
 
-        .btn-call svg { width: 28px; height: 28px; fill: currentColor; }
+        .btn-call svg { width: 20px; height: 20px; fill: currentColor; }
     </style>
 </head>
 <body>
@@ -104,11 +118,13 @@ description: "Mano telefono numeris."
     </div>
 
     <h1>Mindaugas R.</h1>
+    <p>Susisiekite su manimi</p>
 
     <a href="tel:+37061600055" class="phone-link">+370 616 00055</a>
 
-    <a href="tel:+37061600055" class="btn-call" title="Skambinti Mindaugui" aria-label="Skambinti Mindaugui">
+    <a href="tel:+37061600055" class="btn-call">
         <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.15 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+        Skambinti
     </a>
 </main>
 
