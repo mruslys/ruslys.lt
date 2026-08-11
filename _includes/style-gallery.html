@@ -62,15 +62,15 @@ body {
     border: 1px solid #e0e0e0;
     border-radius: 16px;
     padding: 30px;
-    text-align: center; /* Pagrindinis lygiavimas centrui */
+    text-align: center;
     box-shadow: 0 4px 15px rgba(0,0,0,0.03);
     margin-top: 20px;
     display: flex;
     flex-direction: column;
-    gap: 20px; /* Tarpai tarp blokų */
+    gap: 20px;
 }
 
-/* Bendrinis etiketės stilius - VISOS CENTRUOTOS */
+/* Bendrinis etiketės stilius */
 .section-label {
     font-size: 1rem;
     text-transform: uppercase;
@@ -78,11 +78,10 @@ body {
     color: #777;
     margin-bottom: 10px;
     margin-top: 0;
-    text-align: center; /* Užtikrina centravimą */
+    text-align: center;
     font-weight: 600;
 }
 
-/* Specifinis stilius kainos skaičiui */
 .price-value {
     font-size: 3rem;
     font-weight: 800;
@@ -91,11 +90,9 @@ body {
     text-align: center;
 }
 
-/* Turinys viduje (Aprašymas) */
 .content-block {
-    text-align: left; /* Tekstas bloke kairėje */
+    text-align: left;
 }
-
 .page-content-body {
     font-size: 0.95rem;
     line-height: 1.6;
@@ -111,13 +108,13 @@ body {
 
 /* Kontaktų zonos stiliai */
 .contact-box {
-    border-top: 1px solid #eee; /* Brūkšnys atskyrimui */
+    border-top: 1px solid #eee;
     padding-top: 20px;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Centruoja mygtukus viduje */
+    align-items: center;
     gap: 10px;
-    margin: 0; /* Panaikina maržas, naudoja gap iš .info-card */
+    margin: 0;
 }
 
 .phone-link {
@@ -139,7 +136,7 @@ body {
 .call-button {
     width: 72px;
     height: 72px;
-    margin: 5px auto 0; /* Centruotas */
+    margin: 5px auto 0;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -164,6 +161,88 @@ body {
     display: block;
 }
 
+/* Greitieji susirašinėjimo mygtukai */
+.messaging-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+.msg-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #6B7280;
+    background-color: #F3F4F6;
+    border: 1px solid #E5E7EB;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+.msg-btn svg {
+    width: 14px;
+    height: 14px;
+    fill: currentColor;
+    opacity: 0.7;
+}
+.msg-btn:hover {
+    color: #FFFFFF;
+    transform: translateY(-2px);
+    border-color: transparent;
+    opacity: 1;
+}
+.msg-btn:hover svg {
+    opacity: 1;
+}
+.sms-btn:hover { background-color: #4B5563; }
+.whatsapp-btn:hover { background-color: #25D366; }
+.telegram-btn:hover { background-color: #0088CC; }
+
+/* Facebook įrašo konteineris */
+.fb-embed-section {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 16px;
+    padding: 20px;
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+}
+.fb-post {
+    width: 100% !important;
+    max-width: 500px;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+}
+.fb-post span, 
+.fb-post iframe {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+@media (max-width: 520px) {
+    .fb-embed-section {
+        padding: 1rem;
+        padding-top: 2rem;
+        padding-bottom: 0;
+    }
+    .fb-post {
+        transform: scale(0.9);
+        transform-origin: top center;
+        margin-bottom: -20px;
+    }
+}
+
 /* Lightbox stiliai */
 .lightbox {
     display: none;
@@ -179,4 +258,46 @@ body {
     padding: 20px;
     box-sizing: border-box;
 }
-.
+.lightbox.active {
+    display: flex;
+}
+.lightbox img {
+    max-width: 85%;
+    max-height: 85vh;
+    border-radius: 8px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+    object-fit: contain;
+}
+.lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    color: #fff;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    background: none;
+    border: none;
+    z-index: 10000;
+}
+.lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #fff;
+    font-size: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.3);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    z-index: 10000;
+    user-select: none;
+    transition: background 0.2s;
+}
+.lightbox-nav:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+.lightbox-prev { left: 20px; }
+.lightbox-next { right: 20px; }
