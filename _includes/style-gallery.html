@@ -254,3 +254,37 @@
                 margin-bottom: -20px; /* Kompensuoja sumažinimo atsiradusį tarpą */
             }
         }
+
+/* Greitieji susirašinėjimo mygtukai */
+.messaging-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+.msg-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.msg-btn:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+}
+.sms-btn {
+    background-color: #4B5563;
+}
+.whatsapp-btn {
+    background-color: #25D366;
+}
+.telegram-btn {
+    background-color: #0088cc;
+}
