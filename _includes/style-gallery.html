@@ -56,8 +56,8 @@ body {
     transform: scale(1.05);
 }
 
-/* Kainos ir kontaktų blokas po galerija */
-.price-section {
+/* Bendra kortelė informacijai (anksčiau .price-section) */
+.info-card {
     background: #ffffff;
     border: 1px solid #e0e0e0;
     border-radius: 16px;
@@ -65,44 +65,63 @@ body {
     text-align: center;
     box-shadow: 0 4px 15px rgba(0,0,0,0.03);
     margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Tarpai tarp .content-block, .price-block, .contact-box */
 }
-.price-label {
+
+/* Bendrinis etiketės stilius (anksčiau .price-label) */
+.section-label {
     font-size: 1rem;
     text-transform: uppercase;
     letter-spacing: 1px;
     color: #777;
     margin-bottom: 8px;
+    margin-top: 0;
 }
+
+/* Specifinis stilius kainos skaičiui */
 .price-value {
     font-size: 3rem;
     font-weight: 800;
     color: #111;
-    margin-bottom: 25px;
+    line-height: 1;
+}
+
+/* Turinys viduje (Aprašymas) */
+.content-block {
+    text-align: left;
+}
+.page-content-body {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #444;
+}
+.page-content-body ul {
+    margin: 10px 0;
+    padding-left: 20px;
+}
+.page-content-body li {
+    margin-bottom: 5px;
 }
 
 /* Kontaktų zonos stiliai */
 .contact-box {
     border-top: 1px solid #eee;
-    padding-top: 25px;
+    padding-top: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 15px;
 }
-.contact-label {
-    font-size: 1rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #777;
-    margin-bottom: 4px;
-}
+/* .contact-label nebenaudojamas, naudojamas .section-label */
+
 .phone-link {
     font-size: 1.5rem;
     color: var(--text-color);
     text-decoration: none;
     font-weight: 700;
     transition: color 0.2s ease;
-    margin-bottom: 5px;
 }
 .phone-link:hover {
     color: var(--accent-color);
@@ -136,15 +155,6 @@ body {
     height: 34px;
     fill: #FFFFFF;
     display: block;
-}
-
-/* Švelnus tekstas po mygtuku */
-.call-hint {
-    font-size: 0.9rem;
-    color: var(--muted-color);
-    max-width: 320px;
-    line-height: 1.4;
-    margin: 0 auto;
 }
 
 /* Lightbox (peržiūros lango) stiliai */
@@ -225,7 +235,6 @@ body {
     width: 100%;
     box-sizing: border-box;
 }
-
 .fb-post {
     width: 100% !important;
     max-width: 500px;
@@ -233,13 +242,11 @@ body {
     justify-content: center;
     overflow: hidden;
 }
-
 .fb-post span, 
 .fb-post iframe {
     width: 100% !important;
     max-width: 100% !important;
 }
-
 @media (max-width: 520px) {
     .fb-embed-section {
         padding: 1rem;
@@ -253,12 +260,12 @@ body {
     }
 }
 
-/* Greitieji susirašinėjimo mygtukai – prislopinti (dimmed) */
+/* Greitieji susirašinėjimo mygtukai – prislopinti */
 .messaging-buttons {
     display: flex;
     justify-content: center;
     gap: 8px;
-    margin-top: 15px;
+    margin-top: 10px; /* Sumažinta, nes .info-card turi gap */
     flex-wrap: wrap;
 }
 .msg-btn {
@@ -281,7 +288,6 @@ body {
     fill: currentColor;
     opacity: 0.7;
 }
-
 .msg-btn:hover {
     color: #FFFFFF;
     transform: translateY(-2px);
@@ -291,7 +297,6 @@ body {
 .msg-btn:hover svg {
     opacity: 1;
 }
-
 .sms-btn:hover {
     background-color: #4B5563;
 }
