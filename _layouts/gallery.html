@@ -42,6 +42,14 @@
     <script async defer crossorigin="anonymous" src="https://connect.facebook.net/lt_LT/sdk.js#xfbml=1&version=v18.0"></script>
 
     <div class="container">
+        
+        <!-- Viršutinis mygtukas su M raide (nuoroda iš _config.yaml) -->
+        <div class="top-home-button-wrapper">
+            <a href="{{ site.home_url | default: site.url }}" class="top-home-button" title="Grįžti į pagrindinį">
+                <img src="{{ 'img/w512.png' | relative_url }}" alt="Logo">
+            </a>
+        </div>
+
         <!-- Puslapio antraštė -->
         <header class="header">
             <h1>{{ page.title }}</h1>
