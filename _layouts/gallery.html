@@ -426,7 +426,7 @@
         
         <!-- Viršutinis mygtukas -->
         <div class="top-home-button-wrapper">
-            <a href="{{ site.url }}" class="top-home-button" title="Grįžti į pagrindinį">
+            <a href="{{ site.sell_url | default: site.url }}" class="top-home-button" title="Grįžti į pagrindinį">
                 <img src="{{ 'img/w512.png' | relative_url }}" alt="Logo">
             </a>
         </div>
