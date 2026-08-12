@@ -166,6 +166,36 @@
             line-height: 1;
         }
 
+        /* Nuomos blokas */
+        .rent-card {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 16px;
+            padding: 20px 30px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .rent-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #15803d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0;
+        }
+
+        .rent-text {
+            font-size: 1rem;
+            color: #166534;
+            margin: 0;
+            line-height: 1.5;
+        }
+
         .page-content-body {
             font-size: 0.95rem;
             line-height: 1.6;
@@ -373,7 +403,7 @@
             max-width: 85%;
             max-height: 85vh;
             border-radius: 8px;
-            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 5px 25px rgba(0,0,0,0.5);
             object-fit: contain;
         }
 
@@ -465,6 +495,16 @@
         {% if page.amount %}
         <div class="info-card">
             <div class="price-value">{{ page.amount }} {{ page.currency | default: "EUR" }}</div>
+        </div>
+        {% endif %}
+
+        <!-- Nuomos blokas -->
+        {% if page.rent == true %}
+        <div class="rent-card">
+            <h3 class="rent-title">Galima nuoma</h3>
+            {% if page.rent_text %}
+            <p class="rent-text">{{ page.rent_text }}</p>
+            {% endif %}
         </div>
         {% endif %}
 
