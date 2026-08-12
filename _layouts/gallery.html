@@ -166,6 +166,18 @@
             line-height: 1;
         }
 
+        /* Kainos ir nuomos konteineris (viena eilutė desktop ekrane) */
+        .price-rent-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .price-rent-container > div {
+            flex: 1;
+            margin-top: 0;
+        }
+
         /* Nuomos blokas */
         .rent-card {
             background: #f0fdf4;
@@ -174,9 +186,9 @@
             padding: 20px 30px;
             text-align: center;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
-            margin-top: 20px;
             display: flex;
             flex-direction: column;
+            justify-content: center;
             gap: 8px;
         }
 
@@ -367,6 +379,13 @@
             max-width: 100% !important;
         }
 
+        /* Responsive taisyklė mobiliesiems: išdėstome vieną po kitu */
+        @media (max-width: 768px) {
+            .price-rent-container {
+                flex-direction: column;
+            }
+        }
+
         @media (max-width: 520px) {
             .fb-embed-section {
                 padding: 1rem 1rem 0 1rem;
@@ -491,19 +510,22 @@
         </div>
         {% endif %}
 
-        <!-- Kaina -->
-        {% if page.amount %}
-        <div class="info-card">
-            <div class="price-value">{{ page.amount }} {{ page.currency | default: "EUR" }}</div>
-        </div>
-        {% endif %}
+        <!-- Kaina ir Nuoma vienoje eilutėje (Desktop) / viena virš kitos (Mobile) -->
+        {% if page.amount or page.rent == true %}
+        <div class="price-rent-container">
+            {% if page.amount %}
+            <div class="info-card">
+                <div class="price-value">{{ page.amount }} {{ page.currency | default: "EUR" }}</div>
+            </div>
+            {% endif %}
 
-        <!-- Nuomos blokas -->
-        {% if page.rent == true %}
-        <div class="rent-card">
-            <h3 class="rent-title">Galima nuoma</h3>
-            {% if page.rent_text %}
-            <p class="rent-text">{{ page.rent_text }}</p>
+            {% if page.rent == true %}
+            <div class="rent-card">
+                <h3 class="rent-title">Galima nuoma</h3>
+                {% if page.rent_text %}
+                <p class="rent-text">{{ page.rent_text }}</p>
+                {% endif %}
+            </div>
             {% endif %}
         </div>
         {% endif %}
