@@ -224,13 +224,13 @@
         </div>
 
         <header class="header">
-            <h1>Parduodu</h1>
+            <h1>{{ page.title }} | {{ site.title }}</h1>
         </header>
 
         <div class="shop-grid">
             {% assign sorted_products = site.pages | sort: "priority" %}
             {% for product in sorted_products %}
-                {% if product.url contains '/parduodu/' and product.layout == 'gallery' and product.url != '/parduodu/' %}
+                {% if product.layout == 'item' and product.url != '/parduodu/' %}
                     <div class="product-card">
                         <a href="{{ product.url | relative_url }}">
                             {% assign target_folder = product.url | remove: "index.html" %}
