@@ -143,6 +143,17 @@
             font-weight: 700;
             color: #111;
             margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .rent-badge {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #10B981;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         /* Mobiliems ekranams (< 768px): nuotrauka kairėje, tekstas dešinėje */
@@ -192,6 +203,13 @@
                 grid-row: 3;
                 margin: 0;
                 font-size: 1rem;
+                flex-direction: row;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .rent-badge {
+                font-size: 0.7rem;
             }
         }
     </style>
@@ -228,7 +246,12 @@
                             
                             <h3>{{ product.title }}</h3>
                             <p class="product-description">{{ product.description }}</p>
-                            <p class="product-price">{{ product.amount }} {{ product.currency | default: "EUR" }}</p>
+                            <p class="product-price">
+                                <span>{{ product.amount }} {{ product.currency | default: "EUR" }}</span>
+                                {% if product.rent == true %}
+                                    <span class="rent-badge">GALIMA NUOMA</span>
+                                {% endif %}
+                            </p>
                         </a>
                     </div>
                 {% endif %}
