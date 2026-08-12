@@ -478,11 +478,6 @@
 </head>
 <body>
 
-    {% if page.post_embed %}
-        <div id="fb-root"></div>
-        <script async defer crossorigin="anonymous" src="https://connect.facebook.net/lt_LT/sdk.js#xfbml=1&version=v18.0"></script>
-    {% endif %}
-
     <div class="container">
         
         <!-- Viršutinis mygtukas -->
@@ -564,18 +559,6 @@
                     <svg viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.14-.26.26-.534.26l.191-3.053 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.654-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/></svg>
                     Telegram
                 </a>
-            </div>
-        </div>
-        {% endif %}
-
-        <!-- Facebook įrašo blokas -->
-        {% if page.post_embed %}
-        <div class="fb-embed-section">
-            <div class="fb-post" 
-                 data-href="{{ page.post_embed }}" 
-                 data-width="500"
-                 data-lazy="true"
-                 data-show-text="true">
             </div>
         </div>
         {% endif %}
