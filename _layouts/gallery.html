@@ -34,25 +34,401 @@
     {% include favicon.html %}
     
     <style>
-        {% include style-gallery.html %}
+        :root {
+            --bg-color: #fcfcfc;
+            --text-color: #333;
+            --muted-color: #6B7280;
+            --accent-color: #007bff;
+            --call-bg: #10B981;
+            --call-bg-hover: #059669;
+            --shadow-color: rgba(16, 185, 129, 0.25);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        /* Viršutinis mygtukas */
+        .top-home-button-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .top-home-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            background-color: #111111;
+            border-radius: 50%;
+            box-shadow: 0 0 0 7px rgba(107, 114, 128, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+            text-decoration: none;
+        }
+
+        .top-home-button:hover {
+            transform: translateY(-3px);
+            background-color: #000000;
+            box-shadow: 0 0 0 7px rgba(107, 114, 128, 0.35), 0 6px 18px rgba(0, 0, 0, 0.25);
+        }
+
+        .top-home-button img {
+            width: 26px;
+            height: 26px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .top-logo-text {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #6B7280;
+            margin-top: 8px;
+        }
+
+        /* Paveikslėlių tinklelis ir galerija */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .gallery-item {
+            aspect-ratio: 16/10;
+            overflow: hidden;
+            border-radius: 12px;
+            background: #eee;
+            border: 1px solid #ddd;
+            cursor: pointer;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+
+        /* Bendra kortelė informacijai */
+        .info-card {
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .price-value {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #111;
+            line-height: 1;
+        }
+
+        .page-content-body {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #444;
+        }
+
+        .page-content-body ul {
+            margin: 10px 0;
+            padding-left: 20px;
+            text-align: left;
+        }
+
+        .page-content-body li {
+            margin-bottom: 5px;
+        }
+
+        /* Markdown lentelės */
+        .page-content-body table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+
+        .page-content-body th, 
+        .page-content-body td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.95rem;
+        }
+
+        .page-content-body tr:last-child th,
+        .page-content-body tr:last-child td {
+            border-bottom: none;
+        }
+
+        .page-content-body th {
+            color: #6B7280;
+            font-weight: 600;
+            width: 50%;
+            text-align: right;
+        }
+
+        .page-content-body td {
+            color: #333;
+            font-weight: 500;
+            width: 50%;
+            text-align: left;
+        }
+
+        /* Kontaktai */
+        .phone-link {
+            font-size: 1.5rem;
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 700;
+            transition: color 0.2s ease;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .phone-link:hover {
+            color: var(--accent-color);
+            text-decoration: underline;
+        }
+
+        .call-button {
+            width: 72px;
+            height: 72px;
+            margin: 5px auto 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--call-bg);
+            border-radius: 50%;
+            text-decoration: none;
+            transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 10px 25px var(--shadow-color);
+        }
+
+        .call-button:hover {
+            background: var(--call-bg-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 14px 35px var(--shadow-color);
+        }
+
+        .call-button:active {
+            transform: scale(0.96);
+        }
+
+        .call-button svg {
+            width: 34px;
+            height: 34px;
+            fill: #FFFFFF;
+            display: block;
+        }
+
+        .messaging-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .msg-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #6B7280;
+            background-color: #F3F4F6;
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .msg-btn svg {
+            width: 14px;
+            height: 14px;
+            fill: currentColor;
+            opacity: 0.7;
+        }
+
+        .msg-btn:hover {
+            color: #FFFFFF;
+            transform: translateY(-2px);
+            border-color: transparent;
+            opacity: 1;
+        }
+
+        .msg-btn:hover svg {
+            opacity: 1;
+        }
+
+        .sms-btn:hover { background-color: #4B5563; }
+        .whatsapp-btn:hover { background-color: #25D366; }
+        .telegram-btn:hover { background-color: #0088CC; }
+
+        /* Facebook įrašas */
+        .fb-embed-section {
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+            overflow: hidden;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .fb-post {
+            width: 100% !important;
+            max-width: 500px;
+            display: flex;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .fb-post span, 
+        .fb-post iframe {
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+
+        @media (max-width: 520px) {
+            .fb-embed-section {
+                padding: 1rem 1rem 0 1rem;
+                padding-top: 2rem;
+            }
+            .fb-post {
+                transform: scale(0.9);
+                transform-origin: top center;
+                margin-bottom: -20px;
+            }
+        }
+
+        /* Lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .lightbox.active {
+            display: flex;
+        }
+
+        .lightbox img {
+            max-width: 85%;
+            max-height: 85vh;
+            border-radius: 8px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
+            object-fit: contain;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            background: none;
+            border: none;
+            z-index: 10000;
+        }
+
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #fff;
+            font-size: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.3);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            z-index: 10000;
+            user-select: none;
+            transition: background 0.2s;
+        }
+
+        .lightbox-nav:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .lightbox-prev { left: 20px; }
+        .lightbox-next { right: 20px; }
     </style>
 </head>
 <body>
 
-        {% if page.post_embed %}
-            <div id="fb-root"></div>
-            <script async defer crossorigin="anonymous" src="https://connect.facebook.net/lt_LT/sdk.js#xfbml=1&version=v18.0"></script>
-        {% endif %}
+    {% if page.post_embed %}
+        <div id="fb-root"></div>
+        <script async defer crossorigin="anonymous" src="https://connect.facebook.net/lt_LT/sdk.js#xfbml=1&version=v18.0"></script>
+    {% endif %}
 
     <div class="container">
         
-        <!-- Viršutinis mygtukas su M logo ir tekstu PARDUODU -->
+        <!-- Viršutinis mygtukas -->
         <div class="top-home-button-wrapper">
-            <a href="{{ site.sell_url | default: site.url }}" class="top-home-button" title="Grįžti į pagrindinį">
+            <a href="{{ site.url }}" class="top-home-button" title="Grįžti į pagrindinį">
                 <img src="{{ 'img/w512.png' | relative_url }}" alt="Logo">
             </a>
-                <span class="top-logo-text">PARDUODU</span>
-            
         </div>
 
         <!-- Puslapio antraštė -->
@@ -75,29 +451,46 @@
             {% endfor %}
         </div>
         
-        <!-- Pagrindinė informacija (atskiras blokas) -->
+        <!-- Pagrindinė informacija -->
         {% assign cleaned_content = content | strip %}
         {% if cleaned_content != "" %}
         <div class="info-card">
-            <div class="content-block">
-                <div class="page-content-body">
-                    {{ content }}
-                </div>
+            <div class="page-content-body">
+                {{ content }}
             </div>
         </div>
         {% endif %}
 
-        <!-- Kaina (atskiras blokas) -->
+        <!-- Kaina -->
         {% if page.amount %}
         <div class="info-card">
             <div class="price-value">{{ page.amount }} {{ page.currency | default: "EUR" }}</div>
         </div>
         {% endif %}
 
-        <!-- Kontaktai (atskiras blokas) -->
+        <!-- Kontaktai -->
         {% if site.phone %}
         <div class="info-card">
-            {% include phone-box.html %}
+            <a href="tel:{{ site.phone }}" class="phone-link">{{ site.phone }}</a>
+            
+            <a href="tel:{{ site.phone }}" class="call-button" aria-label="Skambinti">
+                <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+            </a>
+        
+            <div class="messaging-buttons">
+                <a href="sms:{{ site.phone }}" class="msg-btn sms-btn">
+                    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+                    SMS
+                </a>
+                <a href="https://wa.me/{{ site.phone | remove: ' ' | remove: '+' }}" target="_blank" rel="noopener" class="msg-btn whatsapp-btn">
+                    <svg viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.315-9.877-9.78-9.878-5.467 0-9.884 4.414-9.886 9.878-.001 1.868.522 3.513 1.486 5.039l-1.043 3.811 3.9-1.025zm11.356-7.156c-.208-.104-1.231-.607-1.422-.677-.191-.07-.331-.104-.471.104-.14.208-.541.677-.664.815-.123.138-.247.156-.455.052-.208-.104-.882-.325-1.68-1.037-.621-.555-1.04-1.24-1.162-1.448-.122-.208-.013-.322.091-.426.094-.094.208-.247.312-.371.104-.124.139-.208.209-.348.07-.14.035-.262-.018-.368-.053-.106-.471-1.137-.646-1.558-.17-.411-.343-.356-.471-.362-.122-.006-.262-.006-.402-.006s-.372.052-.568.26c-.196.208-.749.731-.749 1.782s.768 2.072.873 2.214c.104.142 1.51 2.305 3.658 3.232.511.22 1.008.352 1.353.451.567.161 1.083.138 1.491.084.455-.061 1.231-.503 1.404-1.357.173-.854.173-1.587.121-1.357z"/></svg>
+                    WhatsApp
+                </a>
+                <a href="https://t.me/{{ site.telegram | default: site.phone | remove: ' ' | remove: '+' }}" target="_blank" rel="noopener" class="msg-btn telegram-btn">
+                    <svg viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.14-.26.26-.534.26l.191-3.053 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.654-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/></svg>
+                    Telegram
+                </a>
+            </div>
         </div>
         {% endif %}
 
@@ -115,7 +508,7 @@
         
     </div>
 
-    <!-- Peržiūros langas (Lightbox) su rodyklėmis -->
+    <!-- Lightbox -->
     <div id="lightbox" class="lightbox">
         <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
         <button class="lightbox-nav lightbox-prev" onclick="changeSlide(-1)">&#10094;</button>
@@ -171,6 +564,5 @@
             }
         });
     </script>
-
 </body>
 </html>
