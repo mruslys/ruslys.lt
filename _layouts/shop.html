@@ -228,7 +228,8 @@
         </header>
 
         <div class="shop-grid">
-            {% for product in site.pages %}
+            {% assign sorted_products = site.pages | sort: "priority" %}
+            {% for product in sorted_products %}
                 {% if product.url contains '/parduodu/' and product.layout == 'gallery' and product.url != '/parduodu/' %}
                     <div class="product-card">
                         <a href="{{ product.url | relative_url }}">
