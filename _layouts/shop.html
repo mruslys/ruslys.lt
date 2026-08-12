@@ -110,37 +110,15 @@
             display: block;
         }
 
-        /* Paveikslėlio konteineris kainos uždėjimui ant viršaus */
-        .product-img-wrapper {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 1/1;
-            border-radius: 12px;
-            overflow: hidden;
-            background: #eee;
-            margin-bottom: 12px;
-        }
-
         .product-card img {
             width: 100%;
-            height: 100%;
+            height: auto;
+            aspect-ratio: 1/1;
             object-fit: cover;
+            border-radius: 12px;
+            background: #eee;
+            margin-bottom: 12px;
             display: block;
-        }
-
-        /* Kainos juosta per visą plotį paveikslėlio apačioje */
-        .product-price-bar {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background-color: #000000;
-            color: #ffffff;
-            font-size: 1.1rem;
-            font-weight: 700;
-            text-align: center;
-            padding: 8px 0;
-            box-sizing: border-box;
         }
 
         .product-card h3 {
@@ -152,12 +130,19 @@
         .product-description {
             font-size: 0.9rem;
             color: #666;
-            margin: 0;
+            margin: 0 0 10px 0;
             line-height: 1.4;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+        }
+
+        .product-price {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #111;
+            margin: 0;
         }
 
         /* Mobiliems ekranams (< 768px): nuotrauka kairėje, tekstas dešinėje */
@@ -175,22 +160,17 @@
             .product-card a {
                 display: grid;
                 grid-template-columns: 100px 1fr;
-                grid-template-rows: auto auto;
+                grid-template-rows: auto auto auto;
                 column-gap: 12px;
                 align-items: start;
             }
 
-            .product-img-wrapper {
-                grid-row: span 2;
+            .product-card img {
+                grid-row: span 3;
                 width: 100px;
                 height: 100px;
                 aspect-ratio: 1/1;
                 margin-bottom: 0;
-            }
-
-            .product-price-bar {
-                font-size: 0.95rem;
-                padding: 4px 0;
             }
 
             .product-card h3 {
@@ -204,7 +184,14 @@
             .product-description {
                 grid-column: 2;
                 grid-row: 2;
+                margin: 0 0 6px 0;
+            }
+
+            .product-price {
+                grid-column: 2;
+                grid-row: 3;
                 margin: 0;
+                font-size: 1rem;
             }
         }
     </style>
@@ -219,7 +206,7 @@
         </div>
 
         <header class="header">
-            <h1>Parduodu arba nuomoju</h1>
+            <h1>Parduodu</h1>
         </header>
 
         <div class="shop-grid">
@@ -227,26 +214,21 @@
                 {% if product.url contains '/parduodu/' and product.layout == 'gallery' and product.url != '/parduodu/' %}
                     <div class="product-card">
                         <a href="{{ product.url | relative_url }}">
-                            <div class="product-img-wrapper">
-                                {% assign target_folder = product.url | remove: "index.html" %}
-                                {% assign found_img = false %}
-                                {% for static_file in site.static_files %}
-                                    {% if static_file.path contains target_folder and found_img == false %}
-                                        {% assign ext = static_file.extname | remove: "." | downcase %}
-                                        {% if "jpg,jpeg,png,webp" contains ext %}
-                                            <img src="{{ static_file.path | relative_url }}" alt="{{ product.title }}" loading="lazy">
-                                            {% assign found_img = true %}
-                                        {% endif %}
+                            {% assign target_folder = product.url | remove: "index.html" %}
+                            {% assign found_img = false %}
+                            {% for static_file in site.static_files %}
+                                {% if static_file.path contains target_folder and found_img == false %}
+                                    {% assign ext = static_file.extname | remove: "." | downcase %}
+                                    {% if "jpg,jpeg,png,webp" contains ext %}
+                                        <img src="{{ static_file.path | relative_url }}" alt="{{ product.title }}" loading="lazy">
+                                        {% assign found_img = true %}
                                     {% endif %}
-                                {% endfor %}
-                                
-                                <div class="product-price-bar">
-                                    {{ product.amount }} {{ product.currency | default: "EUR" }}
-                                </div>
-                            </div>
+                                {% endif %}
+                            {% endfor %}
                             
                             <h3>{{ product.title }}</h3>
                             <p class="product-description">{{ product.description }}</p>
+                            <p class="product-price">{{ product.amount }} {{ product.currency | default: "EUR" }}</p>
                         </a>
                     </div>
                 {% endif %}
