@@ -159,13 +159,6 @@
             gap: 20px;
         }
 
-        .price-value {
-            font-size: 3rem;
-            font-weight: 800;
-            color: #111;
-            line-height: 1;
-        }
-
         /* Kainos ir nuomos konteineris (viena eilutė desktop ekrane) */
         .price-rent-container {
             display: flex;
@@ -178,7 +171,27 @@
             margin-top: 0;
         }
 
-        /* Nuomos blokas */
+        /* Gintarinis kainos blokas */
+        .price-card {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 16px;
+            padding: 20px 30px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .price-value {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #b45309;
+            line-height: 1;
+        }
+
+        /* Nuomos blokas (smaragsinis) */
         .rent-card {
             background: #f0fdf4;
             border: 1px solid #bbf7d0;
@@ -514,7 +527,7 @@
         {% if page.amount or page.rent == true %}
         <div class="price-rent-container">
             {% if page.amount %}
-            <div class="info-card">
+            <div class="price-card">
                 <div class="price-value">{{ page.amount }} {{ page.currency | default: "EUR" }}</div>
             </div>
             {% endif %}
