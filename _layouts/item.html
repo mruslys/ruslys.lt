@@ -267,20 +267,38 @@
 
         /* Mobiliuosiuose ekranuose lentelės elementai išsidėsto patogiau */
         @media (max-width: 600px) {
+            .page-content-body table, 
+            .page-content-body tbody, 
+            .page-content-body tr {
+                display: block;
+                width: 100%;
+            }
+            .page-content-body tr {
+                background: #F9FAFB;
+                border: 1px solid #E5E7EB;
+                border-radius: 8px;
+                margin-bottom: 10px;
+                padding: 10px 12px;
+            }
             .page-content-body th, 
             .page-content-body td {
                 display: block;
                 width: 100% !important;
                 text-align: left !important;
+                border: none !important;
+                padding: 0 !important;
             }
             .page-content-body th {
-                padding-bottom: 2px;
-                color: #9CA3AF;
-                font-size: 0.85rem;
+                color: #6B7280;
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin-bottom: 2px;
             }
             .page-content-body td {
-                padding-top: 0;
-                padding-bottom: 12px;
+                color: #111827;
+                font-size: 0.9rem;
+                font-weight: 600;
             }
         }
 
