@@ -318,6 +318,17 @@
             flex-shrink: 0;
         }
 
+        /* Neįkyrus telefono numeris po mygtuku */
+        .phone-subtext {
+            font-size: 0.9rem;
+            color: var(--muted-color);
+            margin-top: 6px;
+            margin-bottom: 4px;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            user-select: all; /* Leidžia lengvai vienu paspaudimu pažymėti kopijavimui */
+        }
+
         .messaging-buttons {
             display: flex;
             justify-content: center;
@@ -547,10 +558,13 @@
         <!-- Kontaktai -->
         {% if site.phone %}
         <div class="info-card">
-            <a href="tel:{{ page.phone | default: site.phone }}" class="call-button" aria-label="Skambinti dabar">
+            <a href="tel:{{ page.phone | default: site.phone }}" class="call-button" aria-label="Teirautis">
                 <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
-                {{ page.phone | default: site.phone }}
+                Teirautis
             </a>
+
+            <!-- Neįkyrus telefono numeris po mygtuku -->
+            <div class="phone-subtext">Tel. {{ page.phone | default: site.phone }}</div>
         
             {% if page.sms or page.whatsapp or page.telegram %}
             <div class="messaging-buttons">
