@@ -68,9 +68,15 @@
             margin-bottom: 40px;
         }
 
+        /* Pakeistas antraštės stilius gražesniam lūžimui mobiliuosiuose */
         .header h1 {
-            font-size: 2.5rem;
+            font-size: clamp(1.8rem, 5vw, 2.5rem); /* Dinamiškas dydis: sumažėja mobiliajame, išauga kompiuteryje */
+            line-height: 1.25;                    /* Glaudesni tarpai tarp eilučių */
             margin-bottom: 10px;
+            hyphens: auto;                        /* Automatinis žodžių perkėlimas lietuvių kalba */
+            -webkit-hyphens: auto;
+            -ms-hyphens: auto;
+            overflow-wrap: break-word;
         }
 
         .header p {
@@ -274,7 +280,7 @@
 
         /* Kontaktai */
         .phone-link {
-            font-size: clamp(1.7rem, 4.5vw, 2.3rem); /* Dinamiškas, didelis dydis, saugus mobiliuosiuose */
+            font-size: clamp(1.7rem, 4.5vw, 2.3rem);
             color: var(--text-color);
             text-decoration: none;
             font-weight: 800;
@@ -288,7 +294,6 @@
             color: var(--accent-color);
         }
         
-        /* Pailgas skambinimo mygtukas su tekstu ir ikona kairėje */
         .call-button {
             display: inline-flex;
             align-items: center;
@@ -403,7 +408,6 @@
             max-width: 100% !important;
         }
 
-        /* Responsive taisyklė mobiliesiems: išdėstome vieną po kitu */
         @media (max-width: 768px) {
             .price-rent-container {
                 flex-direction: column;
