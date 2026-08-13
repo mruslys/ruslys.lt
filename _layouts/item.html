@@ -279,34 +279,20 @@
         }
 
         /* Kontaktai */
-        .phone-link {
-            font-size: clamp(1.7rem, 4.5vw, 2.3rem);
-            color: var(--text-color);
-            text-decoration: none;
-            font-weight: 800;
-            letter-spacing: -0.02em;
-            transition: color 0.2s ease;
-            display: inline-block;
-            margin-bottom: 2px;
-        }
-        
-        .phone-link:hover {
-            color: var(--accent-color);
-        }
-        
         .call-button {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 12px;
             width: 100%;
-            max-width: 280px;
-            margin: 12px auto 16px;
+            max-width: 320px;
+            margin: 4px auto 8px;
             padding: 14px 24px;
             background: var(--call-bg);
             color: #FFFFFF;
-            font-size: 1.05rem;
-            font-weight: 700;
+            font-size: clamp(1.2rem, 3.5vw, 1.5rem);
+            font-weight: 800;
+            letter-spacing: -0.02em;
             text-decoration: none;
             border-radius: 50px;
             transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
@@ -325,16 +311,9 @@
             transform: scale(0.98);
         }
 
-        .contact-details {
-            font-size: 0.95rem;
-            color: var(--muted-color);
-            margin-bottom: 15px;
-            margin-top: -5px;
-        }
-
         .call-button svg {
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
             fill: #FFFFFF;
             display: block;
             flex-shrink: 0;
@@ -568,15 +547,9 @@
         <!-- Kontaktai -->
         {% if site.phone %}
         <div class="info-card">
-            <a href="tel:{{ page.phone | default: site.phone }}" class="phone-link">{{ page.phone | default: site.phone }}</a>
-            
-            {% if page.contact %}
-            <div class="contact-details">{{ page.contact }}</div>
-            {% endif %}
-
             <a href="tel:{{ page.phone | default: site.phone }}" class="call-button" aria-label="Skambinti dabar">
                 <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
-                Skambinti dabar
+                {{ page.phone | default: site.phone }}
             </a>
         
             {% if page.sms or page.whatsapp or page.telegram %}
