@@ -265,6 +265,25 @@
             text-align: left;
         }
 
+        /* Mobiliuosiuose ekranuose lentelės elementai išsidėsto patogiau */
+        @media (max-width: 600px) {
+            .page-content-body th, 
+            .page-content-body td {
+                display: block;
+                width: 100% !important;
+                text-align: left !important;
+            }
+            .page-content-body th {
+                padding-bottom: 2px;
+                color: #9CA3AF;
+                font-size: 0.85rem;
+            }
+            .page-content-body td {
+                padding-top: 0;
+                padding-bottom: 12px;
+            }
+        }
+
         /* Kontaktai ir skambinimo mygtukas */
         .call-button {
             display: inline-flex;
