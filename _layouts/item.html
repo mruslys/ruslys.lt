@@ -67,12 +67,11 @@
             margin-bottom: 40px;
         }
 
-        /* Pakeistas antraštės stilius gražesniam lūžimui mobiliuosiuose */
         .header h1 {
-            font-size: clamp(1.8rem, 5vw, 2.5rem); /* Dinamiškas dydis: sumažėja mobiliajame, išauga kompiuteryje */
-            line-height: 1.25;                    /* Glaudesni tarpai tarp eilučių */
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
+            line-height: 1.25;
             margin-bottom: 10px;
-            hyphens: auto;                        /* Automatinis žodžių perkėlimas lietuvių kalba */
+            hyphens: auto;
             -webkit-hyphens: auto;
             -ms-hyphens: auto;
             overflow-wrap: break-word;
@@ -117,15 +116,6 @@
             display: block;
         }
 
-        .top-logo-text {
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: #6B7280;
-            margin-top: 8px;
-        }
-
         /* Paveikslėlių tinklelis ir galerija */
         .gallery-grid {
             display: grid;
@@ -168,7 +158,7 @@
             gap: 20px;
         }
 
-        /* Kainos ir nuomos konteineris (viena eilutė desktop ekrane) */
+        /* Kainos ir nuomos konteineris */
         .price-rent-container {
             display: flex;
             gap: 20px;
@@ -180,7 +170,6 @@
             margin-top: 0;
         }
 
-        /* Gintarinis kainos blokas */
         .price-card {
             background: #EFF6FF;
             border: 1px solid #BFDBFE;
@@ -191,6 +180,7 @@
             align-items: center;
             justify-content: center;
         }
+
         .price-value {
             font-size: 3rem;
             font-weight: 800;
@@ -198,7 +188,6 @@
             line-height: 1;
         }
 
-        /* Nuomos blokas (smaragsinis) */
         .rent-card {
             background: #f0fdf4;
             border: 1px solid #bbf7d0;
@@ -244,7 +233,6 @@
             margin-bottom: 5px;
         }
 
-        /* Markdown lentelės */
         .page-content-body table {
             width: 100%;
             border-collapse: collapse;
@@ -277,21 +265,20 @@
             text-align: left;
         }
 
-        /* Kontaktai */
+        /* Kontaktai ir mygtukas (atstatytas į subalansuotą stilių) */
         .call-button {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 12px;
             width: 100%;
-            max-width: 320px;
-            margin: 4px auto 8px;
+            max-width: 280px;
+            margin: 4px auto 0;
             padding: 14px 24px;
             background: var(--call-bg);
             color: #FFFFFF;
-            font-size: clamp(1.2rem, 3.5vw, 1.5rem);
-            font-weight: 800;
-            letter-spacing: -0.02em;
+            font-size: 1.05rem;
+            font-weight: 700;
             text-decoration: none;
             border-radius: 50px;
             transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
@@ -311,22 +298,30 @@
         }
 
         .call-button svg {
-            width: 22px;
-            height: 22px;
+            width: 20px;
+            height: 20px;
             fill: #FFFFFF;
             display: block;
             flex-shrink: 0;
         }
 
-        /* Neįkyrus telefono numeris po mygtuku */
+        /* Padidintas telefono numeris po mygtuku be „tel:“ ir be prefikso */
         .phone-subtext {
-            font-size: 0.9rem;
-            color: var(--muted-color);
-            margin-top: 6px;
+            font-size: 1.05rem;
+            margin-top: 8px;
             margin-bottom: 4px;
-            font-weight: 500;
-            letter-spacing: 0.02em;
-            user-select: all; /* Leidžia lengvai vienu paspaudimu pažymėti kopijavimui */
+            font-weight: 600;
+        }
+
+        .phone-subtext a {
+            color: var(--text-color);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .phone-subtext a:hover {
+            color: var(--call-bg);
+            text-decoration: underline;
         }
 
         .messaging-buttons {
@@ -563,8 +558,10 @@
                 Teirautis
             </a>
 
-            <!-- Neįkyrus telefono numeris po mygtuku -->
-            <div class="phone-subtext">Tel. {{ page.phone | default: site.phone }}</div>
+            <!-- Interaktyvus telefono numeris nuorodos formatu po mygtuku -->
+            <div class="phone-subtext">
+                <a href="tel:{{ page.phone | default: site.phone }}">{{ page.phone | default: site.phone }}</a>
+            </div>
         
             {% if page.sms or page.whatsapp or page.telegram %}
             <div class="messaging-buttons">
