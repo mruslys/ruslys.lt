@@ -288,19 +288,26 @@
             color: var(--accent-color);
         }
         
+        /* Pailgas skambinimo mygtukas su tekstu ir ikona kairėje */
         .call-button {
-            width: 60px;
-            height: 60px;
-            margin: 12px auto 16px;
-            display: flex;
-            justify-content: center;
+            display: inline-flex;
             align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            max-width: 280px;
+            margin: 12px auto 16px;
+            padding: 14px 24px;
             background: var(--call-bg);
-            border-radius: 50%;
+            color: #FFFFFF;
+            font-size: 1.05rem;
+            font-weight: 700;
             text-decoration: none;
+            border-radius: 50px;
             transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
             box-shadow: 0 6px 20px var(--shadow-color);
             border: 2px solid rgba(255, 255, 255, 0.9);
+            box-sizing: border-box;
         }
         
         .call-button:hover {
@@ -310,14 +317,15 @@
         }
         
         .call-button:active {
-            transform: scale(0.95);
+            transform: scale(0.98);
         }
         
         .call-button svg {
-            width: 28px;
-            height: 28px;
+            width: 20px;
+            height: 20px;
             fill: #FFFFFF;
             display: block;
+            flex-shrink: 0;
         }
 
         .messaging-buttons {
@@ -551,8 +559,9 @@
         <div class="info-card">
             <a href="tel:{{ page.phone | default: site.phone }}" class="phone-link">{{ page.phone | default: site.phone }}</a>
             
-            <a href="tel:{{ page.phone | default: site.phone }}" class="call-button" aria-label="Skambinti">
+            <a href="tel:{{ page.phone | default: site.phone }}" class="call-button" aria-label="Skambinti dabar">
                 <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                Skambinti dabar
             </a>
         
             {% if page.sms or page.whatsapp or page.telegram %}
