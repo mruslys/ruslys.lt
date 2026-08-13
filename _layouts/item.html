@@ -45,6 +45,8 @@
             --call-bg: #10B981;
             --call-bg-hover: #059669;
             --shadow-color: rgba(16, 185, 129, 0.25);
+            --phone-link-color: #0284c7; /* Šviečiantis žydras/melsvas atspalvis numerio nuorodai */
+            --phone-link-hover: #0369a1;
         }
 
         body {
@@ -265,20 +267,21 @@
             text-align: left;
         }
 
-        /* Kontaktai ir mygtukas (atstatytas į subalansuotą stilių) */
+        /* Kontaktai ir tavo mėgstamas stambesnis skambinimo mygtukas */
         .call-button {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 12px;
             width: 100%;
-            max-width: 280px;
-            margin: 4px auto 0;
+            max-width: 320px;
+            margin: 4px auto 8px;
             padding: 14px 24px;
             background: var(--call-bg);
             color: #FFFFFF;
-            font-size: 1.05rem;
-            font-weight: 700;
+            font-size: clamp(1.2rem, 3.5vw, 1.5rem);
+            font-weight: 800;
+            letter-spacing: -0.02em;
             text-decoration: none;
             border-radius: 50px;
             transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
@@ -298,29 +301,30 @@
         }
 
         .call-button svg {
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
             fill: #FFFFFF;
             display: block;
             flex-shrink: 0;
         }
 
-        /* Padidintas telefono numeris po mygtuku be „tel:“ ir be prefikso */
+        /* Padidintas, melsvas ir išraiškingesnis telefono numeris po mygtuku */
         .phone-subtext {
-            font-size: 1.05rem;
-            margin-top: 8px;
+            font-size: 1.25rem;
+            margin-top: 6px;
             margin-bottom: 4px;
-            font-weight: 600;
+            font-weight: 700;
+            letter-spacing: 0.03em;
         }
 
         .phone-subtext a {
-            color: var(--text-color);
+            color: var(--phone-link-color);
             text-decoration: none;
             transition: color 0.2s ease;
         }
 
         .phone-subtext a:hover {
-            color: var(--call-bg);
+            color: var(--phone-link-hover);
             text-decoration: underline;
         }
 
@@ -558,7 +562,7 @@
                 Teirautis
             </a>
 
-            <!-- Interaktyvus telefono numeris nuorodos formatu po mygtuku -->
+            <!-- Padidintas, melsvas telefono numeris nuorodos formatu po mygtuku -->
             <div class="phone-subtext">
                 <a href="tel:{{ page.phone | default: site.phone }}">{{ page.phone | default: site.phone }}</a>
             </div>
