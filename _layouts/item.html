@@ -45,8 +45,6 @@
             --call-bg: #10B981;
             --call-bg-hover: #059669;
             --shadow-color: rgba(16, 185, 129, 0.25);
-            --phone-link-color: #0284c7; /* Šviečiantis žydras/melsvas atspalvis numerio nuorodai */
-            --phone-link-hover: #0369a1;
         }
 
         body {
@@ -267,7 +265,7 @@
             text-align: left;
         }
 
-        /* Kontaktai ir tavo mėgstamas stambesnis skambinimo mygtukas */
+        /* Kontaktai ir skambinimo mygtukas */
         .call-button {
             display: inline-flex;
             align-items: center;
@@ -275,7 +273,7 @@
             gap: 12px;
             width: 100%;
             max-width: 320px;
-            margin: 4px auto 8px;
+            margin: 4px auto;
             padding: 14px 24px;
             background: var(--call-bg);
             color: #FFFFFF;
@@ -288,6 +286,7 @@
             box-shadow: 0 6px 20px var(--shadow-color);
             border: 2px solid rgba(255, 255, 255, 0.9);
             box-sizing: border-box;
+            cursor: pointer;
         }
         
         .call-button:hover {
@@ -306,26 +305,6 @@
             fill: #FFFFFF;
             display: block;
             flex-shrink: 0;
-        }
-
-        /* Padidintas, melsvas ir išraiškingesnis telefono numeris po mygtuku */
-        .phone-subtext {
-            font-size: 1.25rem;
-            margin-top: 6px;
-            margin-bottom: 4px;
-            font-weight: 700;
-            letter-spacing: 0.03em;
-        }
-
-        .phone-subtext a {
-            color: var(--phone-link-color);
-            text-decoration: none;
-            transition: color 0.2s ease;
-        }
-
-        .phone-subtext a:hover {
-            color: var(--phone-link-hover);
-            text-decoration: underline;
         }
 
         .messaging-buttons {
@@ -557,15 +536,10 @@
         <!-- Kontaktai -->
         {% if site.phone %}
         <div class="info-card">
-            <a href="tel:{{ page.phone | default: site.phone }}" class="call-button" aria-label="Teirautis">
+            <a href="tel:{{ page.phone | default: site.phone }}" class="call-button" id="callButton" onclick="revealPhone(event, '{{ page.phone | default: site.phone }}')" aria-label="Teirautis">
                 <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
-                Teirautis
+                <span id="callButtonText">Teirautis</span>
             </a>
-
-            <!-- Padidintas, melsvas telefono numeris nuorodos formatu po mygtuku -->
-            <div class="phone-subtext">
-                <a href="tel:{{ page.phone | default: site.phone }}">{{ page.phone | default: site.phone }}</a>
-            </div>
         
             {% if page.sms or page.whatsapp or page.telegram %}
             <div class="messaging-buttons">
@@ -622,6 +596,14 @@
             const items = document.querySelectorAll('.gallery-item img');
             galleryImages = Array.from(items).map(img => img.src);
         });
+
+        function revealPhone(event, phoneNumber) {
+            const textSpan = document.getElementById('callButtonText');
+            // Pakeičiame tekstą mygtuko viduje į telefono numerį
+            if (textSpan) {
+                textSpan.innerText = phoneNumber;
+            }
+        }
 
         function openLightbox(element) {
             const img = element.querySelector('img');
