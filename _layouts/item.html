@@ -54,12 +54,17 @@
             padding: 0;
             background-color: var(--bg-color);
             color: var(--text-color);
+            display: flex;
+            flex-direction: column;
         }
 
         .container {
             max-width: 1000px;
             margin: 0 auto;
             padding: 40px 20px;
+            flex: 1;
+            box-sizing: border-box;
+            width: 100%;
         }
 
         .header {
@@ -114,6 +119,15 @@
             height: 26px;
             object-fit: contain;
             display: block;
+        }
+
+        .top-logo-text {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #6B7280;
+            margin-top: 8px;
         }
 
         /* Paveikslėlių tinklelis ir galerija */
@@ -531,6 +545,16 @@
             transform: scale(0.98);
         }
 
+        /* Neįkyrus footerio stilius */
+        .site-footer {
+            text-align: center;
+            padding: 25px 20px;
+            font-size: 0.85rem;
+            color: #9CA3AF;
+            border-top: 1px solid #E5E7EB;
+            background-color: var(--bg-color);
+        }
+
     </style>
 </head>
 <body>
@@ -547,6 +571,7 @@
             <a href="{{ site.sell_url | default: site.url }}" class="top-home-button" title="Grįžti į pagrindinį">
                 <img src="{{ 'img/w512.png' | relative_url }}" alt="Logo">
             </a>
+            <span class="top-logo-text">Mindaugas</span>
         </div>
 
         <!-- Puslapio antraštė -->
@@ -664,6 +689,11 @@
 
     </div>
 
+    <!-- Neįkyrus footeris -->
+    <footer class="site-footer">
+        ruslys.lt &copy; {{ 'now' | date: '%Y' }} &bull; Visos teisės saugomos
+    </footer>
+
     <!-- Lightbox -->
     <div id="lightbox" class="lightbox">
         <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
@@ -683,7 +713,6 @@
 
         function revealPhone(event, phoneNumber) {
             const textSpan = document.getElementById('callButtonText');
-            // Pakeičiame tekstą mygtuko viduje į telefono numerį
             if (textSpan) {
                 textSpan.innerText = phoneNumber;
             }
