@@ -27,12 +27,17 @@
             padding: 0;
             background-color: var(--bg-color);
             color: var(--text-color);
+            display: flex;
+            flex-direction: column;
         }
 
         .container {
             max-width: 1000px;
             margin: 0 auto;
             padding: 40px 20px;
+            flex: 1;
+            box-sizing: border-box;
+            width: 100%;
         }
 
         /* Viršutinis mygtukas */
@@ -221,7 +226,16 @@
             color: #6B7280;
             margin-top: 8px;
         }
-        
+
+        /* Neįkyrus footerio stilius */
+        .site-footer {
+            text-align: center;
+            padding: 25px 20px;
+            font-size: 0.85rem;
+            color: #9CA3AF;
+            border-top: 1px solid #E5E7EB;
+            background-color: #fcfcfc;
+        }
     </style>
 </head>
 <body>
@@ -271,5 +285,10 @@
         </div>
 
     </div>
+
+    <!-- Neįkyrus footeris -->
+    <footer class="site-footer">
+        ruslys.lt &copy; {{ 'now' | date: '%Y' }} &bull; Visos teisės saugomos
+    </footer>
 </body>
 </html>
