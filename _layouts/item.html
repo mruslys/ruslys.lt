@@ -554,8 +554,16 @@
         {% if page.amount or page.rent == true %}
         <div class="price-rent-container">
             {% if page.amount %}
-            <div class="price-card">
+            <div class="price-card" style="flex-direction: column; gap: 15px;">
                 <div class="price-value">{{ page.amount }} {{ page.currency | default: "EUR" }}</div>
+                
+                {% if page.payment == true %}
+                <form action="https://pavedimu.lt/mruslys" method="POST" target="_blank" style="width: 100%;">
+                    <input type="hidden" name="finalAmount" value="{{ page.amount }}">
+                    <input type="hidden" name="finalPurpose" value="{{ page.title | replace: '"', '' | replace: "'", '' }}">
+                    <button type="submit" class="buy-button">Pirkti</button>
+                </form>
+                {% endif %}
             </div>
             {% endif %}
 
