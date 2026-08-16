@@ -555,6 +555,36 @@
             background-color: var(--bg-color);
         }
 
+        /* Žalias „tuščias“ (outline) rezervacijos mygtukas */
+        .reserve-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 24px;
+            background: transparent;
+            color: #10B981;
+            font-size: clamp(1.1rem, 3vw, 1.3rem);
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            text-decoration: none;
+            border-radius: 50px;
+            border: 2px solid #10B981;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+            box-sizing: border-box;
+        }
+
+        .reserve-button:hover {
+            background: #10B981;
+            color: #FFFFFF;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.25);
+        }
+
+        .reserve-button:active {
+            transform: scale(0.98);
+        }
+
     </style>
 </head>
 <body>
@@ -652,12 +682,12 @@
                 <form action="https://pavedimu.lt/mruslys" method="POST" style="width: 100%; margin-top: 15px;">
                     <input type="hidden" name="finalAmount" value="{{ calculated_rent_amount }}">
                     <input type="hidden" name="finalPurpose" value="Rezervacija: {{ page_slug }}">
-                    <button type="submit" class="buy-button">Rezervuoti</button>
+                    <button type="submit" class="reserve-button">Rezervuoti</button>
                 </form>
                 {% endif %}
             </div>
             {% endif %}
-            
+
         </div>
         {% endif %}
 
