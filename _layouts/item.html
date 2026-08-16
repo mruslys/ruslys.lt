@@ -637,8 +637,27 @@
                 {% if page.rent_text %}
                 <p class="rent-text">{{ page.rent_text }}</p>
                 {% endif %}
+
+                {% if page.rent_rate and page.amount %}
+                {% assign url_segments = page.url | remove: 'index.html' | split: '/' %}
+                {% assign page_slug = "" %}
+                {% for segment in url_segments %}
+                    {% if segment != "" %}
+                        {% assign page_slug = segment %}
+                    {% endif %}
+                {% endfor %}
+
+                {% assign calculated_rent_amount = page.amount | times: page.rent_rate | divided_by: 100 | round %}
+
+                <form action="https://pavedimu.lt/mruslys" method="POST" style="width: 100%; margin-top: 15px;">
+                    <input type="hidden" name="finalAmount" value="{{ calculated_rent_amount }}">
+                    <input type="hidden" name="finalPurpose" value="Rezervacija: {{ page_slug }}">
+                    <button type="submit" class="buy-button">Rezervuoti</button>
+                </form>
+                {% endif %}
             </div>
             {% endif %}
+            
         </div>
         {% endif %}
 
