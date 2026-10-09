@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "Skambinti: +370 616 00055"
-description: "Susisiekti su Mindaugu R."
+description: "Susisiekti su Mindaugu R. – Klaipėda"
 ---
 <!DOCTYPE html>
 <html lang="lt">
@@ -49,7 +49,7 @@ description: "Susisiekti su Mindaugu R."
 
         .card {
             background: var(--card-bg);
-            padding: 44px 32px;
+            padding: 40px 32px 44px;
             border-radius: 36px;
             width: 100%;
             max-width: 380px;
@@ -61,7 +61,7 @@ description: "Susisiekti su Mindaugu R."
         .avatar-container {
             width: 96px;
             height: 96px;
-            margin: 0 auto 20px;
+            margin: 0 auto 16px;
             border-radius: 45px;
             overflow: hidden;
             background: #fcfcfc;
@@ -69,6 +69,28 @@ description: "Susisiekti su Mindaugu R."
         }
 
         .avatar { width: 100%; height: 100%; object-fit: contain; display: block; }
+
+        /* Lokacijos ženkliukas */
+        .location-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            background: rgba(0, 0, 0, 0.04);
+            padding: 4px 10px;
+            border-radius: 100px;
+            margin-bottom: 12px;
+            letter-spacing: 0.02em;
+        }
+
+        .location-badge svg {
+            width: 12px;
+            height: 12px;
+            fill: currentColor;
+            opacity: 0.7;
+        }
 
         h1 { 
             font-size: 1.55rem; 
@@ -80,7 +102,7 @@ description: "Susisiekti su Mindaugu R."
         p { 
             color: var(--text-muted); 
             font-size: 0.95rem; 
-            margin-bottom: 20px; 
+            margin-bottom: 22px; 
         }
 
         .phone-link {
@@ -153,17 +175,9 @@ description: "Susisiekti su Mindaugu R."
             opacity: 0.75;
         }
 
-        .btn-sms svg {
-            fill: #007aff;
-        }
-
-        .btn-whatsapp svg {
-            fill: #25d366;
-        }
-
-        .btn-telegram svg {
-            fill: #24a1de;
-        }
+        .btn-sms svg { fill: #007aff; }
+        .btn-whatsapp svg { fill: #25d366; }
+        .btn-telegram svg { fill: #24a1de; }
     </style>
 </head>
 <body>
@@ -171,6 +185,12 @@ description: "Susisiekti su Mindaugu R."
 <main class="card">
     <div class="avatar-container">
         <img src="/img/mr.jpg" alt="Mindaugas R." class="avatar">
+    </div>
+
+    <!-- Lokacijos ženkliukas -->
+    <div class="location-badge">
+        <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        Klaipėda
     </div>
 
     <h1>Mindaugas R.</h1>
