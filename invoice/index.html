@@ -53,6 +53,20 @@ layout: default
             position: relative;
         }
 
+        /* Desktop typography classes inside invoice */
+        .inv-title {
+            font-size: 18px;
+        }
+        .inv-number {
+            font-size: 14px;
+        }
+        .inv-date {
+            font-size: 13px;
+        }
+        .inv-party-heading {
+            font-size: 13.5px;
+        }
+
         /* Temporary class applied during html2pdf capture so 18mm PDF margins look balanced and never overflow */
         .invoice-sheet.pdf-export-mode {
             width: 174mm !important;
@@ -62,17 +76,6 @@ layout: default
             border: none !important;
             box-shadow: none !important;
             height: auto !important;
-        }
-
-        /* Responsive adjustments for smaller mobile screens */
-        @media screen and (max-width: 820px) {
-            .invoice-sheet {
-                width: 100%;
-                height: auto;
-                padding: 20px 16px 28px 16px;
-                border-left: none;
-                border-right: none;
-            }
         }
 
         /* Clean transparent action buttons (no solid background fills) */
@@ -100,13 +103,13 @@ layout: default
             transform: translateY(0.5px);
         }
 
-        /* Sticky Bottom Payment Button */
+        /* Sticky Bottom Payment Button (Slightly enlarged) */
         .pay-btn {
             background: #0f172a;
             color: #ffffff;
             border: 1px solid #0f172a;
-            padding: 10px 22px;
-            font-size: 14px;
+            padding: 13px 30px;
+            font-size: 15.5px;
             font-weight: 600;
             border-radius: 9999px;
             display: inline-flex;
@@ -184,6 +187,43 @@ layout: default
         .totals-table td {
             padding: 3px 0 3px 24px;
             color: #000000;
+        }
+
+        /* Responsive adjustments for smaller mobile screens (excludes PDF export mode) */
+        @media screen and (max-width: 820px) {
+            .invoice-sheet:not(.pdf-export-mode) {
+                width: 100%;
+                height: auto;
+                padding: 18px 14px 26px 14px;
+                border-left: none;
+                border-right: none;
+                font-size: 11px;
+                line-height: 1.4;
+            }
+            .invoice-sheet:not(.pdf-export-mode) .inv-title {
+                font-size: 15px;
+            }
+            .invoice-sheet:not(.pdf-export-mode) .inv-number {
+                font-size: 12px;
+            }
+            .invoice-sheet:not(.pdf-export-mode) .inv-date {
+                font-size: 11px;
+            }
+            .invoice-sheet:not(.pdf-export-mode) .inv-party-heading {
+                font-size: 11.5px;
+            }
+            .invoice-sheet:not(.pdf-export-mode) .invoice-table th {
+                padding: 5px 5px;
+                font-size: 10.5px;
+            }
+            .invoice-sheet:not(.pdf-export-mode) .invoice-table td {
+                padding: 7px 5px;
+                font-size: 11px;
+            }
+            .invoice-sheet:not(.pdf-export-mode) .totals-table td {
+                padding: 2px 0 2px 16px;
+                font-size: 11px;
+            }
         }
 
         /* Hide print-only exclusions during PDF export as well */
@@ -343,18 +383,18 @@ layout: default
         <article id="invoiceDocument" class="invoice-sheet">
             
             <!-- CENTER HEADER: Sąskaita - faktūra, Series/Number, Date -->
-            <section class="text-center mb-8">
-                <h1 class="font-bold text-[18px] tracking-tight text-black">Sąskaita - faktūra</h1>
-                <div id="invNumber" class="font-bold text-[14px] mt-0.5">MRSF-0001</div>
-                <div id="invDate" class="text-[13px] mt-0.5">2026.11.11</div>
+            <section class="text-center mb-6 sm:mb-8">
+                <h1 class="font-bold inv-title tracking-tight text-black">Sąskaita - faktūra</h1>
+                <div id="invNumber" class="font-bold inv-number mt-0.5">MRSF-0001</div>
+                <div id="invDate" class="inv-date mt-0.5">2026.11.11</div>
             </section>
 
             <!-- TWO-COLUMN PARTIES SECTION: Pardavėjas (Left) & Pirkėjas (Right) -->
-            <section class="grid grid-cols-2 gap-6 items-start mb-6">
+            <section class="grid grid-cols-2 gap-4 sm:gap-6 items-start mb-5 sm:mb-6">
                 <!-- Pardavėjas (Left) -->
                 <div class="space-y-0.5">
-                    <div class="font-bold text-[13.5px] mb-1">Pardavėjas</div>
-                    <div class="font-bold text-[13.5px]">Mindaugas Ruslys</div>
+                    <div class="font-bold inv-party-heading mb-1">Pardavėjas</div>
+                    <div class="font-bold inv-party-heading">Mindaugas Ruslys</div>
                     <div>IV pažymos Nr. 1460396</div>
                     <div>El. p.: m.ruslys@gmail.com</div>
                     <div>Tel.: +37061649775</div>
@@ -363,8 +403,8 @@ layout: default
 
                 <!-- Pirkėjas (Right) -->
                 <div class="space-y-0.5">
-                    <div class="font-bold text-[13.5px] mb-1">Pirkėjas</div>
-                    <div id="buyerName" class="font-bold text-[13.5px]">UAB Mokėtojas</div>
+                    <div class="font-bold inv-party-heading mb-1">Pirkėjas</div>
+                    <div id="buyerName" class="font-bold inv-party-heading">UAB Mokėtojas</div>
                     <div id="buyerCodeRow">
                         Įmonės kodas: <span id="buyerCode">000007</span>
                     </div>
@@ -375,9 +415,9 @@ layout: default
             </section>
 
             <!-- DUE DATE ROW: Always right-aligned on both mobile and desktop -->
-            <section class="flex justify-end text-right mt-4 mb-2">
+            <section class="flex justify-end text-right mt-3 sm:mt-4 mb-2">
                 <div class="whitespace-nowrap">
-                    <span class="font-bold mr-4">Apmokėti iki:</span>
+                    <span class="font-bold mr-3 sm:mr-4">Apmokėti iki:</span>
                     <span id="invDueDate">2026.11.21</span>
                 </div>
             </section>
@@ -387,12 +427,12 @@ layout: default
                 <table class="invoice-table">
                     <thead>
                         <tr>
-                            <th class="w-12 text-center">Eil<br>Nr.</th>
+                            <th class="w-9 sm:w-12 text-center">Eil<br>Nr.</th>
                             <th class="text-left">Prekės, paslaugos pavadinimas</th>
-                            <th class="w-16 text-center">Kodas</th>
-                            <th class="w-16 text-center">Kiekis</th>
-                            <th class="w-24 text-right">Kaina</th>
-                            <th class="w-24 text-right">Iš viso</th>
+                            <th class="w-11 sm:w-16 text-center">Kodas</th>
+                            <th class="w-11 sm:w-16 text-center">Kiekis</th>
+                            <th class="w-16 sm:w-24 text-right">Kaina</th>
+                            <th class="w-16 sm:w-24 text-right">Iš viso</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -409,7 +449,7 @@ layout: default
             </section>
 
             <!-- TOTALS SUMMARY (Right-aligned below table) -->
-            <section class="mt-6 flex justify-end">
+            <section class="mt-5 sm:mt-6 flex justify-end">
                 <table class="totals-table">
                     <tbody>
                         <tr>
@@ -429,7 +469,7 @@ layout: default
             </section>
 
             <!-- ISSUED BY LINE (Placed below totals block, on the left side) -->
-            <section class="mt-8">
+            <section class="mt-6 sm:mt-8">
                 <div>
                     <span class="font-bold">Sąskaitą išrašė</span> - Mindaugas Ruslys
                 </div>
@@ -730,10 +770,10 @@ layout: default
             const serviceName = document.getElementById('editServiceName').value.trim() || 'IT paslaugos';
 
             const priceRaw = document.getElementById('editPrice').value.trim().replace(',', '.');
-            const priceVal = priceRaw !== '' && !isNaN( parseFloat(priceRaw) ) ? parseFloat(priceRaw) : 55;
+            const priceVal = priceRaw !== '' && !isNaN(parseFloat(priceRaw)) ? parseFloat(priceRaw) : 55;
 
             const qtyRaw = document.getElementById('editQty').value.trim().replace(',', '.');
-            const qtyVal = qtyRaw !== '' && !isNaN( parseFloat(qtyRaw) ) && parseFloat(qtyRaw) > 0 ? parseFloat(qtyRaw) : 1;
+            const qtyVal = qtyRaw !== '' && !isNaN(parseFloat(qtyRaw)) && parseFloat(qtyRaw) > 0 ? parseFloat(qtyRaw) : 1;
 
             const dateRaw = document.getElementById('editDate').value.trim();
             const parsedDate = parseInvoiceDate(dateRaw);
