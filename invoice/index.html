@@ -1,1 +1,933 @@
-invoice
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sąskaita - faktūra | MRA-0001</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- html2pdf.js for client-side PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- Google Fonts: Inter & Arimo (clean document typography) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --amber-accent: #d97706;
+            --amber-border: rgba(217, 119, 6, 0.35);
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: #111827;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* A4 Invoice Sheet Styling */
+        .invoice-sheet {
+            font-family: 'Arimo', Arial, Helvetica, sans-serif;
+            width: 210mm;
+            min-height: 297mm;
+            background: #ffffff;
+            margin: 0 auto;
+            padding: 18mm 20mm 20mm 20mm;
+            box-sizing: border-box;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 10px 25px -5px rgba(15, 23, 42, 0.04);
+            border: 1px solid #e2e8f0;
+            color: #000000;
+            font-size: 13px;
+            line-height: 1.45;
+            position: relative;
+        }
+
+        /* Responsive adjustments for smaller mobile screens */
+        @media screen and (max-width: 820px) {
+            .invoice-sheet {
+                width: 100%;
+                min-height: auto;
+                padding: 20px 16px 32px 16px;
+                border-left: none;
+                border-right: none;
+            }
+        }
+
+        /* Interactive Click-to-Copy elements */
+        .copyable {
+            cursor: pointer;
+            position: relative;
+            display: inline-block;
+            border-bottom: 1px dashed transparent;
+            transition: color 0.15s ease, border-color 0.15s ease;
+            border-radius: 2px;
+        }
+
+        .copyable:hover {
+            color: var(--amber-accent);
+            border-bottom-color: var(--amber-accent);
+        }
+
+        .copyable::after {
+            content: '\f0c5';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 400;
+            font-size: 10px;
+            margin-left: 5px;
+            color: var(--amber-accent);
+            opacity: 0;
+            transition: opacity 0.15s ease;
+            pointer-events: none;
+        }
+
+        .copyable:hover::after {
+            opacity: 0.85;
+        }
+
+        /* Clean transparent action buttons (no solid background fills) */
+        .action-btn {
+            background: transparent;
+            color: #1e293b;
+            border: 1px solid #cbd5e1;
+            padding: 6px 13px;
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            cursor: pointer;
+            transition: border-color 0.15s ease, color 0.15s ease;
+        }
+
+        .action-btn:hover {
+            background: transparent;
+            border-color: var(--amber-accent);
+            color: var(--amber-accent);
+        }
+
+        .action-btn:active {
+            transform: translateY(0.5px);
+        }
+
+        .action-btn-subtle {
+            background: transparent;
+            color: #475569;
+            border: 1px solid transparent;
+            padding: 4px 8px;
+            font-size: 12px;
+            font-weight: 500;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            transition: color 0.15s ease, border-color 0.15s ease;
+        }
+
+        .action-btn-subtle:hover {
+            background: transparent;
+            color: var(--amber-accent);
+            border-color: var(--amber-border);
+        }
+
+        /* Invoice Table Borders matching traditional Lithuanian accounting layout */
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+        }
+
+        .invoice-table th {
+            border-top: 1px solid #334155;
+            border-bottom: 1px solid #334155;
+            padding: 6px 8px;
+            font-weight: 700;
+            font-size: 12.5px;
+            color: #000000;
+        }
+
+        .invoice-table td {
+            border-bottom: 1px solid #94a3b8;
+            padding: 8px 8px;
+            font-size: 12.5px;
+            vertical-align: top;
+            color: #000000;
+        }
+
+        /* Totals Table */
+        .totals-table {
+            width: 240px;
+            border-collapse: collapse;
+        }
+
+        .totals-table td {
+            padding: 5px 8px;
+            font-size: 12.5px;
+            border-bottom: 1px solid #64748b;
+        }
+
+        /* Clean PDF export mode (hides copy icons during rendering) */
+        .pdf-export-mode .copyable {
+            border-bottom-color: transparent !important;
+            color: #000000 !important;
+        }
+        .pdf-export-mode .copyable::after {
+            display: none !important;
+        }
+
+        /* Native Print Media Rules */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+            html, body {
+                background: #ffffff !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .invoice-sheet {
+                width: 210mm !important;
+                min-height: 297mm !important;
+                margin: 0 !important;
+                padding: 18mm 20mm !important;
+                border: none !important;
+                box-shadow: none !important;
+            }
+            .copyable {
+                border-bottom: none !important;
+                color: #000000 !important;
+            }
+            .copyable::after {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <!-- Top Control & Action Bar (Hidden in Print & PDF) -->
+    <header class="no-print border-b border-slate-200 bg-white/90 backdrop-blur-sm sticky top-0 z-30" data-html2canvas-ignore="true">
+        <div class="max-w-[210mm] mx-auto px-4 py-2.5 flex flex-col gap-2.5">
+            
+            <!-- Primary Row: Hint on Left, PDF & Print Buttons on Right -->
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-2 text-xs text-slate-600">
+                    <i class="fa-regular fa-hand-pointer text-[#d97706]"></i>
+                    <span>Spustelėkite ant bet kurio rekvizito ar sumos, kad nukopijuotumėte</span>
+                </div>
+
+                <div class="flex items-center gap-2.5">
+                    <button type="button" id="btnToggleUrlBar" class="action-btn-subtle" title="Peržiūrėti arba keisti URL parametrus">
+                        <i class="fa-solid fa-link"></i>
+                        <span>URL parametrai</span>
+                    </button>
+
+                    <button type="button" id="btnCopyUrl" class="action-btn" title="Kopijuoti šios sąskaitos tiesioginę nuorodą">
+                        <i class="fa-regular fa-copy"></i>
+                        <span>Kopijuoti nuorodą</span>
+                    </button>
+
+                    <button type="button" id="btnPdf" class="action-btn" title="Generuoti PDF ir atidaryti naujame lange">
+                        <i class="fa-regular fa-file-pdf"></i>
+                        <span>PDF</span>
+                    </button>
+
+                    <button type="button" id="btnPrint" class="action-btn" title="Atidaryti spausdinimo langą">
+                        <i class="fa-solid fa-print"></i>
+                        <span>Spausdinti</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Collapsible URL Simulator & Cloudflare Helper Bar (for testing & quick reference) -->
+            <div id="urlSimulatorPanel" class="hidden pt-2 border-t border-slate-100 text-xs">
+                <div class="flex flex-col gap-2">
+                    <div class="flex items-center justify-between text-slate-500">
+                        <span class="font-medium text-slate-700">
+                            Struktūra: <code class="text-[#d97706] font-mono">/{pirkejas}/{imones_kodas}:{pvm_kodas}/{sf_nr}/{paslaugos_pavadinimas}/{data}:{terminas}/{kaina}/{kiekis}</code>
+                        </span>
+                        <button type="button" id="btnCloudflareInfo" class="action-btn-subtle">
+                            <i class="fa-solid fa-cloud"></i>
+                            <span>Cloudflare _redirects</span>
+                        </button>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                        <div class="flex items-center flex-1 border border-slate-300 rounded-md px-2.5 py-1.5 bg-slate-50/50 focus-within:border-[#d97706]">
+                            <span class="text-slate-400 font-mono select-none hidden md:inline">ruslys.lt/invoice</span>
+                            <input
+                                type="text"
+                                id="urlInput"
+                                class="w-full bg-transparent font-mono text-xs text-slate-800 focus:outline-none"
+                                placeholder="/Pirkėjas/ĮmKodas:PVMKodas/MRA-0001/Paslauga/2026.07.13:10/65/1"
+                            />
+                        </div>
+                        <button type="button" id="btnApplyUrl" class="action-btn py-1.5 px-3 text-xs justify-center">
+                            <i class="fa-solid fa-rotate"></i>
+                            <span>Pritaikyti</span>
+                        </button>
+                    </div>
+
+                    <!-- Quick Preset Switchers -->
+                    <div class="flex flex-wrap items-center gap-2 text-[11px] text-slate-500 pb-1">
+                        <span>Pavyzdžiai:</span>
+                        <button type="button" class="action-btn-subtle preset-btn" data-url="/ALTIC IT, UAB/304754844:LT100012038016/MRA-0001/IT paslaugos pagal kreipinį a%2312606-0151 (atvykimas + 2 val.)/2026.07.13:10/65/1">
+                            1. Pilnas (su PVM ir kiekiu 1)
+                        </button>
+                        <button type="button" class="action-btn-subtle preset-btn" data-url="/UAB Kūrybiniai projektai/305112233/MRA-0002/Serverio administravimo ir priežiūros darbai/2026.07.15/45/3">
+                            2. Be PVM kodo (terminas 10d., kiekis 3)
+                        </button>
+                        <button type="button" class="action-btn-subtle preset-btn" data-url="/MB Skaitmeninis tiltas/306998877:LT100015544332/MRA-0003/Tinklo įrangos konfigūravimas/:14/120">
+                            3. Šios dienos data (:14 d., kiekis 1)
+                        </button>
+                    </div>
+
+                    <!-- Cloudflare Info Box -->
+                    <div id="cloudflareBox" class="hidden border border-amber-300/70 bg-amber-50/40 rounded-md p-2.5 text-slate-700 space-y-1.5">
+                        <div class="font-semibold text-slate-800 flex items-center justify-between">
+                            <span>Kaip sukonfigūruoti Cloudflare Pages / Hostingą:</span>
+                            <button type="button" id="btnCloseCf" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <p class="leading-relaxed">
+                            <strong>1 būdas (Cloudflare Pages):</strong> Projekto šakniniame kataloge (šalia <code class="font-mono">invoice/index.html</code>) sukurkite tekstinį failą pavadinimu <code class="font-mono font-semibold">_redirects</code> (be jokio plėtinio) su šia viena eilute:
+                        </p>
+                        <pre class="bg-white border border-slate-200 rounded px-2.5 py-1.5 font-mono text-xs text-slate-900 select-all">/invoice/*  /invoice/index.html  200</pre>
+                        <p class="leading-relaxed">
+                            <strong>2 būdas (Jei domenas prijungtas per Cloudflare DNS prie kito serverio):</strong> Cloudflare valdymo pulte atsidarykite <em>Rules &rarr; Transform Rules &rarr; Rewrite URL</em>, nustatykite sąlygą <em>URI Path starts with <code class="font-mono">/invoice/</code></em> ir perrašykite (Rewrite to Static) į <code class="font-mono">/invoice/index.html</code>. Naršyklėje adresas liks <code class="font-mono">ruslys.lt/invoice/moketojas/...</code>, o JavaScript pats nuskaitys visus segmentus.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Workspace Wrapper -->
+    <main class="flex-1 py-4 sm:py-8 px-0 sm:px-4">
+        
+        <!-- A4 Invoice Sheet -->
+        <article id="invoiceDocument" class="invoice-sheet">
+            
+            <!-- TOP LEFT: Pardavėjas (Seller Details) -->
+            <section class="mb-6">
+                <div class="font-bold text-[13.5px] mb-1">Pardavėjas</div>
+                <div class="font-bold text-[13.5px]">
+                    <span class="copyable" data-copy="Mindaugas Ruslys" data-label="Pardavėjas">Mindaugas Ruslys</span>
+                </div>
+                <div>
+                    IV pažymos Nr. <span class="copyable" data-copy="1460396" data-label="IV pažymos Nr.">1460396</span>
+                </div>
+                <div>
+                    Adresas: <span class="copyable" data-copy="J. Zembrickio g., 4A Klaipėda LT-92224" data-label="Adresas">J. Zembrickio g., 4A Klaipėda LT-92224</span>
+                </div>
+                <div>
+                    El. <span class="copyable" data-copy="m.ruslys@gmail.com" data-label="El. paštas">m.ruslys@gmail.com</span>
+                </div>
+                <div>
+                    Tel.: <span class="copyable" data-copy="+37061649775" data-label="Tel. numeris">+37061649775</span>
+                </div>
+                <div>
+                    A/s: <span class="copyable font-medium" data-copy="LT253250020910256736" data-label="Banko sąskaita (IBAN)">LT253250020910256736</span>
+                </div>
+                <div>
+                    Bankas: <span class="copyable" data-copy="Revolut Bank UAB" data-label="Bankas">Revolut Bank UAB</span>
+                </div>
+            </section>
+
+            <!-- CENTER HEADER: Sąskaita - faktūra, Series/Number, Date -->
+            <section class="text-center my-7">
+                <h1 class="font-bold text-[18px] tracking-tight text-black">Sąskaita - faktūra</h1>
+                <div class="font-bold text-[14px] mt-0.5">
+                    <span id="invNumber" class="copyable" data-copy="MRA-0001" data-label="Sąskaitos Nr.">MRA-0001</span>
+                </div>
+                <div class="text-[13px] mt-0.5">
+                    <span id="invDate" class="copyable" data-copy="2026.07.13" data-label="Sąskaitos data">2026.07.13</span>
+                </div>
+            </section>
+
+            <!-- MIDDLE SECTION: Pirkėjas (Left) & Apmokėti iki (Right) -->
+            <section class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mt-8 mb-3">
+                <!-- Pirkėjas -->
+                <div class="space-y-0.5">
+                    <div class="font-bold text-[13.5px] mb-1">Pirkėjas</div>
+                    <div class="font-bold text-[13.5px]">
+                        <span id="buyerName" class="copyable" data-copy="ALTIC IT, UAB" data-label="Pirkėjo pavadinimas">ALTIC IT, UAB</span>
+                    </div>
+                    <div id="buyerCodeRow">
+                        Įmonės kodas: <span id="buyerCode" class="copyable" data-copy="304754844" data-label="Įmonės kodas">304754844</span>
+                    </div>
+                    <div id="buyerVatRow">
+                        PVM mokėtojo kodas: <span id="buyerVat" class="copyable" data-copy="LT100012038016" data-label="PVM kodas">LT100012038016</span>
+                    </div>
+                </div>
+
+                <!-- Apmokėti iki (Right-aligned at bottom of buyer block) -->
+                <div class="text-left sm:text-right whitespace-nowrap">
+                    <span class="font-bold mr-6">Apmokėti iki:</span>
+                    <span id="invDueDate" class="copyable" data-copy="2026.07.23" data-label="Apmokėjimo terminas">2026.07.23</span>
+                </div>
+            </section>
+
+            <!-- SERVICES TABLE -->
+            <section class="mt-2">
+                <table class="invoice-table">
+                    <thead>
+                        <tr>
+                            <th class="w-12 text-center">Eil<br>Nr.</th>
+                            <th class="text-left">Prekės, paslaugos pavadinimas</th>
+                            <th class="w-16 text-center">Kodas</th>
+                            <th class="w-16 text-center">Kiekis</th>
+                            <th class="w-24 text-right">Kaina</th>
+                            <th class="w-24 text-right">Iš viso</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-center">1</td>
+                            <td class="text-left">
+                                <span id="serviceName" class="copyable" data-copy="IT paslaugos pagal kreipinį a#12606-0151 (atvykimas + 2 val.)" data-label="Paslaugos pavadinimas">IT paslaugos pagal kreipinį a#12606-0151 (atvykimas + 2 val.)</span>
+                            </td>
+                            <td class="text-center">Ps.</td>
+                            <td id="serviceQty" class="text-center">1</td>
+                            <td class="text-right whitespace-nowrap">
+                                <span id="servicePrice" class="copyable" data-copy="65.00" data-label="Vieneto kaina">€ 65.00</span>
+                            </td>
+                            <td class="text-right whitespace-nowrap">
+                                <span id="serviceTotal" class="copyable" data-copy="65.00" data-label="Eilutės suma">€ 65.00</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- BOTTOM SECTION: Signatures (Left) & Totals Summary (Right) -->
+            <section class="mt-6 flex flex-col sm:flex-row justify-between items-start gap-8">
+                
+                <!-- Left: Issued by / Accepted by -->
+                <div class="space-y-9 pt-1">
+                    <div>
+                        <span class="font-bold">Sąskaitą išrašė</span> - Mindaugas Ruslys
+                    </div>
+                    <div>
+                        <span class="font-bold">Sąskaitą priėmė:</span>
+                    </div>
+                </div>
+
+                <!-- Right: Totals Table -->
+                <div class="self-end sm:self-auto">
+                    <table class="totals-table">
+                        <tbody>
+                            <tr>
+                                <td class="font-bold text-left">Bendra suma:</td>
+                                <td class="text-right whitespace-nowrap">
+                                    <span id="totalGross" class="copyable" data-copy="65.00" data-label="Bendra suma">€ 65.00</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="font-bold text-left">Sumokėta avansu:</td>
+                                <td class="text-right whitespace-nowrap">€ 0.00</td>
+                            </tr>
+                            <tr>
+                                <td class="font-bold text-left">Mokėtina suma:</td>
+                                <td class="text-right whitespace-nowrap font-bold">
+                                    <span id="totalPayable" class="copyable" data-copy="65.00" data-label="Mokėtina suma">€ 65.00</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </section>
+
+        </article>
+    </main>
+
+    <!-- Copy Confirmation Notification Toast (Hidden in Print & PDF) -->
+    <div
+        id="copyToast"
+        data-html2canvas-ignore="true"
+        class="no-print fixed bottom-5 right-5 z-50 pointer-events-none opacity-0 translate-y-2 transition-all duration-200 bg-white border border-[#d97706] text-slate-800 px-3.5 py-2 rounded-md shadow-sm flex items-center gap-2.5 text-xs"
+    >
+        <i class="fa-solid fa-check text-[#d97706]"></i>
+        <div>
+            <span id="toastLabel" class="font-medium text-slate-600">Nukopijuota:</span>
+            <span id="toastValue" class="font-mono font-semibold text-slate-900 ml-1"></span>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * Default demo path matching the attached MRuslys-2026-07.pdf sample
+         * Format: /{pirkejas}/{imones_kodas}:{pvm_kodas}/{sf_nr}/{paslaugos_pavadinimas}/{data}:{apmokejimo_terminas}/{kaina}/{kiekis}
+         */
+        const DEFAULT_DEMO_PATH = '/ALTIC IT, UAB/304754844:LT100012038016/MRA-0001/IT paslaugos pagal kreipinį a%2312606-0151 (atvykimas + 2 val.)/2026.07.13:10/65/1';
+
+        /**
+         * Safely decodes a URL segment while preserving '+' if used intentionally or as space
+         */
+        function decodeSegment(raw) {
+            if (!raw) return '';
+            try {
+                return decodeURIComponent(raw).trim();
+            } catch (e) {
+                return raw.trim();
+            }
+        }
+
+        /**
+         * Formats a Date object as Lithuanian standard invoice date YYYY.MM.DD
+         */
+        function formatDateDot(dateObj) {
+            const yyyy = dateObj.getFullYear();
+            const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const dd = String(dateObj.getDate()).padStart(2, '0');
+            return `${yyyy}.${mm}.${dd}`;
+        }
+
+        /**
+         * Parses a date string (supports YYYY.MM.DD, YYYY-MM-DD, YYYY/MM/DD).
+         * Falls back to today's date if empty or invalid.
+         */
+        function parseInvoiceDate(dateStr) {
+            if (!dateStr || !dateStr.trim()) {
+                return new Date();
+            }
+            const normalized = dateStr.trim().replace(/[-/]/g, '.');
+            const parts = normalized.split('.');
+            if (parts.length === 3) {
+                const y = parseInt(parts[0], 10);
+                const m = parseInt(parts[1], 10) - 1;
+                const d = parseInt(parts[2], 10);
+                const candidate = new Date(y, m, d, 12, 0, 0);
+                if (!isNaN(candidate.getTime())) {
+                    return candidate;
+                }
+            }
+            return new Date();
+        }
+
+        /**
+         * Adds a specified number of calendar days to a Date object
+         */
+        function addDays(dateObj, days) {
+            const result = new Date(dateObj.getTime());
+            result.setDate(result.getDate() + days);
+            return result;
+        }
+
+        /**
+         * Extracts the invoice parameter path from:
+         * 1. Query string ?u= or ?path=
+         * 2. URL Hash #/...
+         * 3. window.location.pathname (stripping /invoice/index.html or /invoice prefix)
+         */
+        function extractRawPathFromLocation() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('u')) {
+                return params.get('u');
+            }
+
+            if (window.location.hash && window.location.hash.startsWith('#/')) {
+                return window.location.hash.slice(1);
+            }
+
+            let pathname = window.location.pathname || '';
+            // Remove leading /invoice/index.html or /invoice or /index.html
+            pathname = pathname
+                .replace(/^\/invoice\/index\.html\/?/i, '/')
+                .replace(/^\/invoice\/?/i, '/')
+                .replace(/^\/index\.html\/?/i, '/');
+
+            // Ignore internal preview environment paths if they don't contain at least 3 segments
+            const testSegments = pathname.split('/').filter(Boolean);
+            if (testSegments.length < 3) {
+                return '';
+            }
+            return pathname;
+        }
+
+        /**
+         * Parses the raw path string into structured invoice fields:
+         * /{pirkejas}/{imones_kodas}:{pvm_kodas}/{sf_nr}/{paslaugos_pavadinimas}/{data}:{apmokejimo_terminas}/{kaina}/{kiekis}
+         */
+        function parseInvoicePath(rawPath) {
+            const pathToUse = (rawPath && rawPath.trim().length > 1) ? rawPath.trim() : DEFAULT_DEMO_PATH;
+            const cleanPath = pathToUse.replace(/^#/, '').replace(/^\/+/, '');
+            const segments = cleanPath.split('/');
+
+            // 1. Pirkėjas
+            const buyerName = decodeSegment(segments[0]) || 'ALTIC IT, UAB';
+
+            // 2. Įmonės kodas : PVM kodas (PVM kodas optional)
+            const codesSegment = decodeSegment(segments[1]) || '';
+            let buyerCode = '';
+            let buyerVat = '';
+            if (codesSegment.includes(':')) {
+                const [c, v] = codesSegment.split(':');
+                buyerCode = (c || '').trim();
+                buyerVat = (v || '').trim();
+            } else {
+                buyerCode = codesSegment.trim();
+                buyerVat = '';
+            }
+
+            // 3. SF numeris (Serija ir numeris)
+            const sfNr = decodeSegment(segments[2]) || 'MRA-0001';
+
+            // 4. Paslaugos pavadinimas
+            const serviceName = decodeSegment(segments[3]) || 'IT paslaugos';
+
+            // 5. Data : Apmokėjimo terminas dienomis (jei nenurodyta - 10 d.)
+            const dateSegment = decodeSegment(segments[4]) || '';
+            let dateRaw = '';
+            let termDays = 10;
+
+            if (dateSegment.includes(':')) {
+                const [dPart, tPart] = dateSegment.split(':');
+                dateRaw = (dPart || '').trim();
+                const parsedTerm = parseInt((tPart || '').trim(), 10);
+                termDays = !isNaN(parsedTerm) && parsedTerm >= 0 ? parsedTerm : 10;
+            } else {
+                dateRaw = dateSegment.trim();
+                termDays = 10;
+            }
+
+            const invoiceDateObj = parseInvoiceDate(dateRaw);
+            const dueDateObj = addDays(invoiceDateObj, termDays);
+            const formattedDate = formatDateDot(invoiceDateObj);
+            const formattedDueDate = formatDateDot(dueDateObj);
+
+            // 6. Kaina
+            const priceSegment = decodeSegment(segments[5]) || '0';
+            const parsedPrice = parseFloat(priceSegment.replace(',', '.'));
+            const unitPrice = !isNaN(parsedPrice) ? parsedPrice : 0;
+
+            // 7. Kiekis (jei nenurodomas - traktuojama 1)
+            const qtySegment = decodeSegment(segments[6]);
+            let quantity = 1;
+            if (qtySegment !== undefined && qtySegment !== '') {
+                const parsedQty = parseFloat(qtySegment.replace(',', '.'));
+                if (!isNaN(parsedQty) && parsedQty > 0) {
+                    quantity = parsedQty;
+                }
+            }
+
+            // Suma = kiekis x kaina
+            const totalAmount = quantity * unitPrice;
+
+            return {
+                rawPath: '/' + cleanPath,
+                buyerName,
+                buyerCode,
+                buyerVat,
+                sfNr,
+                serviceName,
+                formattedDate,
+                formattedDueDate,
+                unitPrice,
+                quantity,
+                totalAmount
+            };
+        }
+
+        /**
+         * Updates an element's visible text and its data-copy attribute simultaneously
+         */
+        function setCopyableElement(elId, displayValue, copyValue) {
+            const el = document.getElementById(elId);
+            if (!el) return;
+            el.textContent = displayValue;
+            el.setAttribute('data-copy', copyValue !== undefined ? copyValue : displayValue);
+        }
+
+        /**
+         * Renders the parsed invoice object into the DOM
+         */
+        function renderInvoice(data) {
+            // Update page title for clean PDF/Print filenames
+            document.title = `Sąskaita - faktūra | ${data.sfNr}`;
+
+            // Header fields
+            setCopyableElement('invNumber', data.sfNr, data.sfNr);
+            setCopyableElement('invDate', data.formattedDate, data.formattedDate);
+            setCopyableElement('invDueDate', data.formattedDueDate, data.formattedDueDate);
+
+            // Buyer fields
+            setCopyableElement('buyerName', data.buyerName, data.buyerName);
+
+            const codeRow = document.getElementById('buyerCodeRow');
+            if (data.buyerCode) {
+                codeRow.classList.remove('hidden');
+                setCopyableElement('buyerCode', data.buyerCode, data.buyerCode);
+            } else {
+                codeRow.classList.add('hidden');
+            }
+
+            // Hide PVM mokėtojo kodas row completely if not provided
+            const vatRow = document.getElementById('buyerVatRow');
+            if (data.buyerVat) {
+                vatRow.classList.remove('hidden');
+                setCopyableElement('buyerVat', data.buyerVat, data.buyerVat);
+            } else {
+                vatRow.classList.add('hidden');
+            }
+
+            // Service table row
+            setCopyableElement('serviceName', data.serviceName, data.serviceName);
+
+            const qtyEl = document.getElementById('serviceQty');
+            const formattedQty = Number.isInteger(data.quantity) ? String(data.quantity) : String(data.quantity);
+            qtyEl.textContent = formattedQty;
+
+            const priceFormatted = data.unitPrice.toFixed(2);
+            const totalFormatted = data.totalAmount.toFixed(2);
+
+            setCopyableElement('servicePrice', `€ ${priceFormatted}`, priceFormatted);
+            setCopyableElement('serviceTotal', `€ ${totalFormatted}`, totalFormatted);
+
+            // Totals summary
+            setCopyableElement('totalGross', `€ ${totalFormatted}`, totalFormatted);
+            setCopyableElement('totalPayable', `€ ${totalFormatted}`, totalFormatted);
+
+            // Sync simulator input field
+            const urlInput = document.getElementById('urlInput');
+            if (urlInput) {
+                urlInput.value = data.rawPath;
+            }
+        }
+
+        /**
+         * Copies text to clipboard using fallback-safe method and shows toast
+         */
+        let toastTimeout = null;
+        function copyToClipboard(text, label = 'Nukopijuota') {
+            const copyAction = () => {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.left = '-9999px';
+                textarea.style.top = '0';
+                document.body.appendChild(textarea);
+                textarea.focus();
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                } catch (err) {
+                    console.error('Copy error:', err);
+                }
+                document.body.removeChild(textarea);
+            };
+
+            copyAction();
+            showCopyToast(label, text);
+        }
+
+        function showCopyToast(label, value) {
+            const toast = document.getElementById('copyToast');
+            const toastLabel = document.getElementById('toastLabel');
+            const toastValue = document.getElementById('toastValue');
+
+            toastLabel.textContent = `${label}:`;
+            toastValue.textContent = value.length > 42 ? value.slice(0, 42) + '…' : value;
+
+            toast.classList.remove('opacity-0', 'translate-y-2');
+            toast.classList.add('opacity-100', 'translate-y-0');
+
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', 'translate-y-2');
+            }, 2200);
+        }
+
+        /**
+         * Generates an A4 PDF and opens it in a new browser tab
+         */
+        async function openPdfInNewTab() {
+            const btnPdf = document.getElementById('btnPdf');
+            const invoiceEl = document.getElementById('invoiceDocument');
+            const sfNr = document.getElementById('invNumber').textContent.trim() || 'Saskaita';
+
+            // Open a blank tab synchronously on user click to prevent popup blockers
+            const newTab = window.open('', '_blank');
+            if (newTab) {
+                newTab.document.write(`
+                    <!DOCTYPE html>
+                    <html lang="lt">
+                    <head>
+                        <meta charset="UTF-8">
+                        <title>${sfNr}.pdf — Generuojama...</title>
+                        <style>
+                            body {
+                                margin: 0;
+                                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+                                background: #f8fafc;
+                                color: #334155;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                height: 100vh;
+                                font-size: 14px;
+                            }
+                        </style>
+                    </head>
+                    <body>Paruošiamas PDF dokumentas (${sfNr}.pdf)...</body>
+                    </html>
+                `);
+            }
+
+            const originalBtnHtml = btnPdf.innerHTML;
+            btnPdf.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Ruoniamas PDF...</span>';
+            btnPdf.disabled = true;
+
+            // Temporarily apply clean export class so hover underlines or icons don't appear
+            invoiceEl.classList.add('pdf-export-mode');
+
+            const opt = {
+                margin: 0,
+                filename: `${sfNr}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: {
+                    scale: 2,
+                    useCORS: true,
+                    letterRendering: true,
+                    scrollY: 0
+                },
+                jsPDF: {
+                    unit: 'mm',
+                    format: 'a4',
+                    orientation: 'portrait'
+                }
+            };
+
+            try {
+                const pdfBlob = await html2pdf().set(opt).from(invoiceEl).outputPdf('blob');
+                const blobUrl = URL.createObjectURL(pdfBlob);
+
+                if (newTab && !newTab.closed) {
+                    // Embed PDF viewer + download button in the newly opened tab
+                    newTab.location.replace(blobUrl);
+                } else {
+                    window.open(blobUrl, '_blank');
+                }
+            } catch (error) {
+                console.error('PDF generation failed:', error);
+                if (newTab && !newTab.closed) {
+                    newTab.close();
+                }
+            } finally {
+                invoiceEl.classList.remove('pdf-export-mode');
+                btnPdf.innerHTML = originalBtnHtml;
+                btnPdf.disabled = false;
+            }
+        }
+
+        // Initialize Event Listeners on DOM Ready
+        window.addEventListener('DOMContentLoaded', () => {
+            // 1. Initial parse from URL (or default demo)
+            const initialRawPath = extractRawPathFromLocation();
+            const invoiceData = parseInvoicePath(initialRawPath);
+            renderInvoice(invoiceData);
+
+            // 2. Delegate click-to-copy on all .copyable elements
+            document.getElementById('invoiceDocument').addEventListener('click', (e) => {
+                const target = e.target.closest('.copyable');
+                if (!target) return;
+                const valToCopy = target.getAttribute('data-copy') || target.textContent.trim();
+                const label = target.getAttribute('data-label') || 'Nukopijuota';
+                copyToClipboard(valToCopy, label);
+            });
+
+            // 3. Print button -> Native browser print dialog
+            document.getElementById('btnPrint').addEventListener('click', () => {
+                window.print();
+            });
+
+            // 4. PDF button -> Generate & open PDF in new tab
+            document.getElementById('btnPdf').addEventListener('click', () => {
+                openPdfInNewTab();
+            });
+
+            // 5. Copy Invoice Share URL button
+            document.getElementById('btnCopyUrl').addEventListener('click', () => {
+                const currentInputPath = document.getElementById('urlInput').value.trim();
+                // Encode segments cleanly for sharing
+                const encodedSegments = currentInputPath
+                    .replace(/^\/+/, '')
+                    .split('/')
+                    .map(seg => {
+                        // Keep ':' unescaped for readability while encoding spaces/special chars
+                        return seg.split(':').map(part => encodeURIComponent(decodeSegment(part))).join(':');
+                    })
+                    .join('/');
+
+                const fullUrl = `https://ruslys.lt/invoice/${encodedSegments}`;
+                copyToClipboard(fullUrl, 'Nuoroda nukopijuota');
+            });
+
+            // 6. Toggle URL simulator bar
+            const urlPanel = document.getElementById('urlSimulatorPanel');
+            document.getElementById('btnToggleUrlBar').addEventListener('click', () => {
+                urlPanel.classList.toggle('hidden');
+            });
+
+            // 7. Apply custom URL from simulator bar
+            const applyCustomUrl = () => {
+                const val = document.getElementById('urlInput').value;
+                const parsed = parseInvoicePath(val);
+                renderInvoice(parsed);
+                try {
+                    window.history.replaceState(null, '', '#' + parsed.rawPath);
+                } catch (e) {}
+            };
+
+            document.getElementById('btnApplyUrl').addEventListener('click', applyCustomUrl);
+            document.getElementById('urlInput').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    applyCustomUrl();
+                }
+            });
+
+            // 8. Preset buttons
+            document.querySelectorAll('.preset-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const presetUrl = btn.getAttribute('data-url');
+                    const parsed = parseInvoicePath(presetUrl);
+                    renderInvoice(parsed);
+                    try {
+                        window.history.replaceState(null, '', '#' + parsed.rawPath);
+                    } catch (e) {}
+                });
+            });
+
+            // 9. Cloudflare helper toggle
+            const cfBox = document.getElementById('cloudflareBox');
+            document.getElementById('btnCloudflareInfo').addEventListener('click', () => {
+                cfBox.classList.toggle('hidden');
+            });
+            document.getElementById('btnCloseCf').addEventListener('click', () => {
+                cfBox.classList.add('hidden');
+            });
+
+            // 10. Listen for hash changes
+            window.addEventListener('hashchange', () => {
+                if (window.location.hash.startsWith('#/')) {
+                    const parsed = parseInvoicePath(window.location.hash.slice(1));
+                    renderInvoice(parsed);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
