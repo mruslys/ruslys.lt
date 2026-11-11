@@ -160,29 +160,56 @@
         .invoice-table th {
             border-top: 1px solid #334155;
             border-bottom: 1px solid #334155;
-        /* Native Print Media Rules - Prevents 2nd blank page */
+            padding: 7px 8px;
+            font-weight: 700;
+            color: #000000;
+        }
+
+        .invoice-table td {
+            border-bottom: 1px solid #cbd5e1;
+            padding: 9px 8px;
+            vertical-align: top;
+            color: #000000;
+        }
+
+        .totals-table {
+            border-collapse: collapse;
+        }
+
+        .totals-table td {
+            padding: 3px 0 3px 24px;
+            color: #000000;
+        }
+
+        /* Hide print-only exclusions during PDF export as well */
+        .invoice-sheet.pdf-export-mode .no-print {
+            display: none !important;
+        }
+
+        /* Native Print Media Rules - Clean 1-page white document without buttons or borders */
         @media print {
             @page {
                 size: A4 portrait;
                 margin: 18mm;
             }
-            html, body {
+            html, body, main {
                 background: #ffffff !important;
+                background-color: #ffffff !important;
                 margin: 0 !important;
                 padding: 0 !important;
                 height: auto !important;
                 min-height: 0 !important;
                 overflow: visible !important;
-            }
-            .no-print {
-                display: none !important;
-            }
-            main {
-                padding: 0 !important;
-                margin: 0 !important;
                 display: block !important;
             }
+            html body .no-print,
+            .no-print {
+                display: none !important;
+                visibility: hidden !important;
+            }
             .invoice-sheet {
+                background: #ffffff !important;
+                background-color: #ffffff !important;
                 width: 100% !important;
                 max-width: 100% !important;
                 height: auto !important;
@@ -190,7 +217,9 @@
                 margin: 0 !important;
                 padding: 0 !important;
                 border: none !important;
+                border-radius: 0 !important;
                 box-shadow: none !important;
+                outline: none !important;
                 page-break-after: avoid !important;
                 page-break-inside: avoid !important;
                 break-after: avoid !important;
@@ -201,8 +230,8 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between">
 
-    <!-- Top Control & Action Bar (Hidden in Print & PDF) -->
-    <header class="no-print border-b border-slate-200 bg-white/95 backdrop-blur-sm sticky top-0 z-30" data-html2canvas-ignore="true">
+    <!-- Top Control & Action Bar (Hidden in Print & PDF, high z-index so Edit Form overlays everything) -->
+    <header class="no-print border-b border-slate-200 bg-white/95 backdrop-blur-sm sticky top-0 z-50" data-html2canvas-ignore="true">
         <div class="max-w-[210mm] mx-auto px-4 py-2.5 flex flex-col gap-3">
             
             <!-- Primary Row: 3 Action Buttons (Centered on Mobile, Right on Desktop) -->
@@ -322,10 +351,9 @@
                     <div class="font-bold text-[13.5px] mb-1">Pardavėjas</div>
                     <div class="font-bold text-[13.5px]">Mindaugas Ruslys</div>
                     <div>IV pažymos Nr. 1460396</div>
-                    <div>El. m.ruslys@gmail.com</div>
+                    <div>El. p.: m.ruslys@gmail.com</div>
                     <div>Tel.: +37061649775</div>
                     <div>A/s: <span class="font-medium">LT253250020910256736</span></div>
-                    <div>Bankas: Revolut Bank UAB</div>
                 </div>
 
                 <!-- Pirkėjas (Right) -->
@@ -402,15 +430,14 @@
                 </div>
             </section>
 
-        </article>
+            <!-- Sticky Bottom Payment Button (Inside white invoice sheet, below issued-by line) -->
+            <div id="payBtnContainer" class="no-print sticky bottom-5 z-10 mt-10 flex justify-center w-full pointer-events-none" data-html2canvas-ignore="true">
+                <a id="btnPayTransfer" href="https://pavedimu.lt/mindaugas/SF%20MRSF-0001/55.00/" target="_blank" rel="noopener noreferrer" class="pay-btn pointer-events-auto">
+                    <span>Apmokėti pavedimu</span>
+                </a>
+            </div>
 
-        <!-- Sticky Bottom Payment Button (Always visible lifted from bottom, docks at bottom on scroll) -->
-        <div class="no-print sticky bottom-5 z-40 mt-6 mb-2 flex justify-center w-full pointer-events-none" data-html2canvas-ignore="true">
-            <a id="btnPayTransfer" href="https://pavedimu.lt/mindaugas/SF#MRSF-0001/55/" target="_blank" rel="noopener noreferrer" class="pay-btn pointer-events-auto">
-                <i class="fa-solid fa-building-columns"></i>
-                <span>Apmokėti pavedimu</span>
-            </a>
-        </div>
+        </article>
     </main>
 
     <script>
@@ -660,11 +687,8 @@
             document.getElementById('totalAdvance').textContent = `€ ${advanceFormatted}`;
             document.getElementById('totalPayable').textContent = `€ ${payableFormatted}`;
 
-            // Update Sticky "Apmokėti pavedimu" button href
-            const cleanPayableForUrl = Number.isInteger(data.payableAmount)
-                ? String(data.payableAmount)
-                : data.payableAmount.toFixed(2);
-            const payUrl = `https://pavedimu.lt/mindaugas/SF#${encodeURIComponent(data.sfNr)}/${encodeURIComponent(cleanPayableForUrl)}/`;
+            // Update Sticky "Apmokėti pavedimu" button href (uses SF%20 prefix)
+            const payUrl = `https://pavedimu.lt/mindaugas/SF%20${encodeURIComponent(data.sfNr)}/${encodeURIComponent(payableFormatted)}/`;
             const btnPayTransfer = document.getElementById('btnPayTransfer');
             if (btnPayTransfer) {
                 btnPayTransfer.href = payUrl;
@@ -845,18 +869,22 @@
 
             // 2. Toggle Edit Form Panel
             const editFormPanel = document.getElementById('editFormPanel');
+            const payBtnContainer = document.getElementById('payBtnContainer');
             document.getElementById('btnToggleEdit').addEventListener('click', () => {
                 if (editFormPanel.classList.contains('hidden')) {
                     if (currentInvoiceState) populateEditForm(currentInvoiceState);
                     editFormPanel.classList.remove('hidden');
+                    if (payBtnContainer) payBtnContainer.classList.add('hidden');
                 } else {
                     editFormPanel.classList.add('hidden');
+                    if (payBtnContainer) payBtnContainer.classList.remove('hidden');
                 }
             });
 
             // 3. Cancel Edit button
             document.getElementById('btnCancelEdit').addEventListener('click', () => {
                 editFormPanel.classList.add('hidden');
+                if (payBtnContainer) payBtnContainer.classList.remove('hidden');
             });
 
             // 4. Submit Edit Form -> Update Hash & Re-render
@@ -867,6 +895,7 @@
                 const parsed = parseInvoiceHash(newHash);
                 renderInvoice(parsed);
                 editFormPanel.classList.add('hidden');
+                if (payBtnContainer) payBtnContainer.classList.remove('hidden');
             });
 
             // 5. Print button -> Native browser print dialog
