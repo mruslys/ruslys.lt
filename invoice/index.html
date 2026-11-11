@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sąskaita - faktūra | MRA-0001</title>
+    <title>Sąskaita - faktūra | MRSF-0001</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome 6 Icons -->
@@ -35,7 +35,7 @@
         .invoice-sheet {
             font-family: 'Arimo', Arial, Helvetica, sans-serif;
             width: 210mm;
-            min-height: 297mm;
+            height: auto;
             background: #ffffff;
             margin: 0 auto;
             padding: 18mm 20mm 20mm 20mm;
@@ -48,12 +48,23 @@
             position: relative;
         }
 
+        /* Temporary class applied during html2pdf capture so 18mm PDF margins look balanced and never overflow */
+        .invoice-sheet.pdf-export-mode {
+            width: 174mm !important;
+            max-width: 174mm !important;
+            padding: 2mm 0 !important;
+            margin: 0 auto !important;
+            border: none !important;
+            box-shadow: none !important;
+            height: auto !important;
+        }
+
         /* Responsive adjustments for smaller mobile screens */
         @media screen and (max-width: 820px) {
             .invoice-sheet {
                 width: 100%;
-                min-height: auto;
-                padding: 20px 16px 32px 16px;
+                height: auto;
+                padding: 20px 16px 28px 16px;
                 border-left: none;
                 border-right: none;
             }
@@ -82,6 +93,35 @@
 
         .action-btn:active {
             transform: translateY(0.5px);
+        }
+
+        /* Sticky Bottom Payment Button */
+        .pay-btn {
+            background: #0f172a;
+            color: #ffffff;
+            border: 1px solid #0f172a;
+            padding: 10px 22px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 9999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            text-decoration: none;
+            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.25), 0 4px 10px -2px rgba(15, 23, 42, 0.15);
+            transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .pay-btn:hover {
+            background: var(--amber-accent);
+            border-color: var(--amber-accent);
+            color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 12px 28px -5px rgba(217, 119, 6, 0.35);
+        }
+
+        .pay-btn:active {
+            transform: translateY(0);
         }
 
         /* Form Input Styling */
@@ -120,53 +160,41 @@
         .invoice-table th {
             border-top: 1px solid #334155;
             border-bottom: 1px solid #334155;
-            padding: 6px 8px;
-            font-weight: 700;
-            font-size: 12.5px;
-            color: #000000;
-        }
-
-        .invoice-table td {
-            border-bottom: 1px solid #94a3b8;
-            padding: 8px 8px;
-            font-size: 12.5px;
-            vertical-align: top;
-            color: #000000;
-        }
-
-        /* Totals Table */
-        .totals-table {
-            width: 240px;
-            border-collapse: collapse;
-        }
-
-        .totals-table td {
-            padding: 5px 8px;
-            font-size: 12.5px;
-            border-bottom: 1px solid #64748b;
-        }
-
-        /* Native Print Media Rules */
+        /* Native Print Media Rules - Prevents 2nd blank page */
         @media print {
             @page {
                 size: A4 portrait;
-                margin: 0;
+                margin: 18mm;
             }
             html, body {
                 background: #ffffff !important;
                 margin: 0 !important;
                 padding: 0 !important;
+                height: auto !important;
+                min-height: 0 !important;
+                overflow: visible !important;
             }
             .no-print {
                 display: none !important;
             }
-            .invoice-sheet {
-                width: 210mm !important;
-                min-height: 297mm !important;
+            main {
+                padding: 0 !important;
                 margin: 0 !important;
-                padding: 18mm 20mm !important;
+                display: block !important;
+            }
+            .invoice-sheet {
+                width: 100% !important;
+                max-width: 100% !important;
+                height: auto !important;
+                min-height: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
                 border: none !important;
                 box-shadow: none !important;
+                page-break-after: avoid !important;
+                page-break-inside: avoid !important;
+                break-after: avoid !important;
+                break-inside: avoid !important;
             }
         }
     </style>
@@ -177,8 +205,8 @@
     <header class="no-print border-b border-slate-200 bg-white/95 backdrop-blur-sm sticky top-0 z-30" data-html2canvas-ignore="true">
         <div class="max-w-[210mm] mx-auto px-4 py-2.5 flex flex-col gap-3">
             
-            <!-- Primary Row: 3 Action Buttons on Right -->
-            <div class="flex items-center justify-end gap-2.5">
+            <!-- Primary Row: 3 Action Buttons (Centered on Mobile, Right on Desktop) -->
+            <div class="flex items-center justify-center sm:justify-end gap-2.5">
                 <button type="button" id="btnToggleEdit" class="action-btn" title="Koreguoti sąskaitos duomenis">
                     <i class="fa-regular fa-pen-to-square"></i>
                     <span>Koreguoti</span>
@@ -201,13 +229,13 @@
                     <!-- Pirkėjas -->
                     <div class="sm:col-span-2 md:col-span-1">
                         <label for="editBuyerName" class="form-label">Pirkėjas</label>
-                        <input type="text" id="editBuyerName" class="form-input" placeholder="Įmonės pavadinimas arba vardas, pavardė" required>
+                        <input type="text" id="editBuyerName" class="form-input" placeholder="UAB Mokėtojas" required>
                     </div>
 
                     <!-- Įmonės kodas -->
                     <div>
                         <label for="editBuyerCode" class="form-label">Įmonės kodas</label>
-                        <input type="text" id="editBuyerCode" class="form-input" placeholder="Pvz. 304754844">
+                        <input type="text" id="editBuyerCode" class="form-input" placeholder="000007">
                     </div>
 
                     <!-- PVM mokėtojo kodas -->
@@ -219,7 +247,7 @@
                     <!-- Sąskaitos Nr. -->
                     <div>
                         <label for="editSfNr" class="form-label">Sąskaitos Nr.</label>
-                        <input type="text" id="editSfNr" class="form-input" placeholder="Pvz. MRA-0001" required>
+                        <input type="text" id="editSfNr" class="form-input" placeholder="MRSF-0001" required>
                     </div>
 
                     <!-- Išrašymo data -->
@@ -237,13 +265,13 @@
                     <!-- Paslaugos pavadinimas -->
                     <div class="sm:col-span-2 md:col-span-3">
                         <label for="editServiceName" class="form-label">Paslaugos pavadinimas</label>
-                        <input type="text" id="editServiceName" class="form-input" placeholder="Prekės ar paslaugos aprašymas" required>
+                        <input type="text" id="editServiceName" class="form-input" placeholder="IT paslaugos" required>
                     </div>
 
                     <!-- Kaina (€) -->
                     <div>
                         <label for="editPrice" class="form-label">Kaina (€)</label>
-                        <input type="number" id="editPrice" step="0.01" class="form-input" placeholder="0.00" required>
+                        <input type="number" id="editPrice" step="0.01" class="form-input" placeholder="55.00" required>
                     </div>
 
                     <!-- Kiekis -->
@@ -259,8 +287,8 @@
                     </div>
                 </div>
 
-                <!-- Form Action Buttons -->
-                <div class="flex items-center justify-end gap-2 mt-4 pt-2.5 border-t border-slate-100">
+                <!-- Form Action Buttons (Centered on Mobile, Right on Desktop) -->
+                <div class="flex items-center justify-center sm:justify-end gap-2 mt-4 pt-2.5 border-t border-slate-100">
                     <button type="button" id="btnCancelEdit" class="action-btn">
                         <i class="fa-solid fa-xmark"></i>
                         <span>Atšaukti</span>
@@ -275,48 +303,49 @@
     </header>
 
     <!-- Main Workspace Wrapper -->
-    <main class="flex-1 py-4 sm:py-8 px-0 sm:px-4">
+    <main class="flex-1 flex flex-col items-center justify-between py-4 sm:py-8 px-0 sm:px-4">
         
         <!-- A4 Invoice Sheet -->
         <article id="invoiceDocument" class="invoice-sheet">
             
-            <!-- TOP LEFT: Pardavėjas (Seller Details) -->
-            <section class="mb-6">
-                <div class="font-bold text-[13.5px] mb-1">Pardavėjas</div>
-                <div class="font-bold text-[13.5px]">Mindaugas Ruslys</div>
-                <div>IV pažymos Nr. 1460396</div>
-                <div>Adresas: J. Zembrickio g., 4A Klaipėda LT-92224</div>
-                <div>El. m.ruslys@gmail.com</div>
-                <div>Tel.: +37061649775</div>
-                <div>A/s: <span class="font-medium">LT253250020910256736</span></div>
-                <div>Bankas: Revolut Bank UAB</div>
-            </section>
-
             <!-- CENTER HEADER: Sąskaita - faktūra, Series/Number, Date -->
-            <section class="text-center my-7">
+            <section class="text-center mb-8">
                 <h1 class="font-bold text-[18px] tracking-tight text-black">Sąskaita - faktūra</h1>
-                <div id="invNumber" class="font-bold text-[14px] mt-0.5">MRA-0001</div>
-                <div id="invDate" class="text-[13px] mt-0.5">2026.07.13</div>
+                <div id="invNumber" class="font-bold text-[14px] mt-0.5">MRSF-0001</div>
+                <div id="invDate" class="text-[13px] mt-0.5">2026.11.11</div>
             </section>
 
-            <!-- MIDDLE SECTION: Pirkėjas (Left) & Apmokėti iki (Right) -->
-            <section class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mt-8 mb-3">
-                <!-- Pirkėjas -->
+            <!-- TWO-COLUMN PARTIES SECTION: Pardavėjas (Left) & Pirkėjas (Right) -->
+            <section class="grid grid-cols-2 gap-6 items-start mb-6">
+                <!-- Pardavėjas (Left) -->
                 <div class="space-y-0.5">
-                    <div class="font-bold text-[13.5px] mb-1">Pirkėjas</div>
-                    <div id="buyerName" class="font-bold text-[13.5px]">ALTIC IT, UAB</div>
-                    <div id="buyerCodeRow">
-                        Įmonės kodas: <span id="buyerCode">304754844</span>
-                    </div>
-                    <div id="buyerVatRow">
-                        PVM mokėtojo kodas: <span id="buyerVat">LT100012038016</span>
-                    </div>
+                    <div class="font-bold text-[13.5px] mb-1">Pardavėjas</div>
+                    <div class="font-bold text-[13.5px]">Mindaugas Ruslys</div>
+                    <div>IV pažymos Nr. 1460396</div>
+                    <div>El. m.ruslys@gmail.com</div>
+                    <div>Tel.: +37061649775</div>
+                    <div>A/s: <span class="font-medium">LT253250020910256736</span></div>
+                    <div>Bankas: Revolut Bank UAB</div>
                 </div>
 
-                <!-- Apmokėti iki (Right-aligned at bottom of buyer block) -->
-                <div class="text-left sm:text-right whitespace-nowrap">
-                    <span class="font-bold mr-6">Apmokėti iki:</span>
-                    <span id="invDueDate">2026.07.23</span>
+                <!-- Pirkėjas (Right) -->
+                <div class="space-y-0.5">
+                    <div class="font-bold text-[13.5px] mb-1">Pirkėjas</div>
+                    <div id="buyerName" class="font-bold text-[13.5px]">UAB Mokėtojas</div>
+                    <div id="buyerCodeRow">
+                        Įmonės kodas: <span id="buyerCode">000007</span>
+                    </div>
+                    <div id="buyerVatRow" style="display: none;">
+                        PVM mokėtojo kodas: <span id="buyerVat"></span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- DUE DATE ROW: Always right-aligned on both mobile and desktop -->
+            <section class="flex justify-end text-right mt-4 mb-2">
+                <div class="whitespace-nowrap">
+                    <span class="font-bold mr-4">Apmokėti iki:</span>
+                    <span id="invDueDate">2026.11.21</span>
                 </div>
             </section>
 
@@ -336,11 +365,11 @@
                     <tbody>
                         <tr>
                             <td class="text-center">1</td>
-                            <td id="serviceName" class="text-left">IT paslaugos pagal kreipinį a#12606-0151 (atvykimas + 2 val.)</td>
+                            <td id="serviceName" class="text-left">IT paslaugos</td>
                             <td class="text-center">Ps.</td>
                             <td id="serviceQty" class="text-center">1</td>
-                            <td id="servicePrice" class="text-right whitespace-nowrap">€ 65.00</td>
-                            <td id="serviceTotal" class="text-right whitespace-nowrap">€ 65.00</td>
+                            <td id="servicePrice" class="text-right whitespace-nowrap">€ 55.00</td>
+                            <td id="serviceTotal" class="text-right whitespace-nowrap">€ 55.00</td>
                         </tr>
                     </tbody>
                 </table>
@@ -352,7 +381,7 @@
                     <tbody>
                         <tr>
                             <td class="font-bold text-left">Bendra suma:</td>
-                            <td id="totalGross" class="text-right whitespace-nowrap">€ 65.00</td>
+                            <td id="totalGross" class="text-right whitespace-nowrap">€ 55.00</td>
                         </tr>
                         <tr>
                             <td class="font-bold text-left">Sumokėta avansu:</td>
@@ -360,7 +389,7 @@
                         </tr>
                         <tr>
                             <td class="font-bold text-left">Mokėtina suma:</td>
-                            <td id="totalPayable" class="text-right whitespace-nowrap font-bold">€ 65.00</td>
+                            <td id="totalPayable" class="text-right whitespace-nowrap font-bold">€ 55.00</td>
                         </tr>
                     </tbody>
                 </table>
@@ -374,15 +403,17 @@
             </section>
 
         </article>
+
+        <!-- Sticky Bottom Payment Button (Always visible lifted from bottom, docks at bottom on scroll) -->
+        <div class="no-print sticky bottom-5 z-40 mt-6 mb-2 flex justify-center w-full pointer-events-none" data-html2canvas-ignore="true">
+            <a id="btnPayTransfer" href="https://pavedimu.lt/mindaugas/SF#MRSF-0001/55/" target="_blank" rel="noopener noreferrer" class="pay-btn pointer-events-auto">
+                <i class="fa-solid fa-building-columns"></i>
+                <span>Apmokėti pavedimu</span>
+            </a>
+        </div>
     </main>
 
     <script>
-        /**
-         * Default demo hash matching the attached MRuslys-2026-07.pdf sample
-         * Format: #/{pirkejas}/{imones_kodas}:{pvm_kodas}/{sf_nr}/{paslaugos_pavadinimas}:{kaina}:{kiekis}/{data}:{apmokejimo_terminas}/{avansas}
-         */
-        const DEFAULT_DEMO_HASH = '#/ALTIC%20IT,%20UAB/304754844:LT100012038016/MRA-0001/IT%20paslaugos%20pagal%20kreipin%C4%AF%20a%2312606-0151%20(atvykimas%20+%202%20val.):65:1/2026.07.13:10/0';
-
         // Holds current parsed state for populating the edit form
         let currentInvoiceState = null;
 
@@ -406,6 +437,15 @@
             const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
             const dd = String(dateObj.getDate()).padStart(2, '0');
             return `${yyyy}.${mm}.${dd}`;
+        }
+
+        /**
+         * Builds the default hash dynamically with today's date
+         * Format: #/{pirkejas}/{imones_kodas}:{pvm_kodas}/{sf_nr}/{paslaugos_pavadinimas}:{kaina}:{kiekis}/{data}:{apmokejimo_terminas}/{avansas}
+         */
+        function getDefaultHash() {
+            const todayStr = formatDateDot(new Date());
+            return `#/UAB%20Mok%C4%97tojas/000007/MRSF-0001/IT%20paslaugos:55:1/${todayStr}:10/0`;
         }
 
         /**
@@ -455,7 +495,7 @@
             if (window.location.hash && window.location.hash.length > 1) {
                 return window.location.hash;
             }
-            return DEFAULT_DEMO_HASH;
+            return getDefaultHash();
         }
 
         /**
@@ -463,15 +503,16 @@
          * #/{pirkejas}/{imones_kodas}:{pvm_kodas}/{sf_nr}/{paslaugos_pavadinimas}:{kaina}:{kiekis}/{data}:{apmokejimo_terminas}/{avansas}
          */
         function parseInvoiceHash(rawHash) {
-            const hashToUse = (rawHash && rawHash.trim().length > 1) ? rawHash.trim() : DEFAULT_DEMO_HASH;
+            const hashToUse = (rawHash && rawHash.trim().length > 1) ? rawHash.trim() : getDefaultHash();
             const cleanPath = hashToUse.replace(/^#\/?/, '');
             const segments = cleanPath.split('/');
 
-            // 1. Pirkėjas
-            const buyerName = decodeSegment(segments[0]) || 'ALTIC IT, UAB';
+            // 1. Pirkėjas (default: UAB Mokėtojas)
+            const buyerName = decodeSegment(segments[0]) || 'UAB Mokėtojas';
 
-            // 2. Įmonės kodas : PVM kodas (PVM kodas optional)
-            const codesSegment = decodeSegment(segments[1]) || '';
+            // 2. Įmonės kodas : PVM kodas (PVM kodas optional, default code: 000007)
+            const hasCodesSegment = segments[1] !== undefined && segments[1] !== '';
+            const codesSegment = hasCodesSegment ? decodeSegment(segments[1]) : '000007';
             let buyerCode = '';
             let buyerVat = '';
             if (codesSegment.includes(':')) {
@@ -483,14 +524,14 @@
                 buyerVat = '';
             }
 
-            // 3. SF numeris
-            const sfNr = decodeSegment(segments[2]) || 'MRA-0001';
+            // 3. SF numeris (default: MRSF-0001)
+            const sfNr = decodeSegment(segments[2]) || 'MRSF-0001';
 
-            // 4. Paslaugos pavadinimas : kaina : kiekis (parsed from the end)
+            // 4. Paslaugos pavadinimas : kaina : kiekis (parsed from the end; default: IT paslaugos, 55, 1)
             const serviceSegment = decodeSegment(segments[3]) || '';
             const serviceParts = serviceSegment.split(':');
             let serviceName = 'IT paslaugos';
-            let unitPrice = 0;
+            let unitPrice = 55;
             let quantity = 1;
 
             if (
@@ -510,14 +551,14 @@
                 serviceName = serviceParts.slice(0, -1).join(':').trim() || 'IT paslaugos';
             } else if (serviceSegment.trim()) {
                 serviceName = serviceSegment.trim();
-                unitPrice = 0;
+                unitPrice = 55;
                 quantity = 1;
             }
 
             if (isNaN(quantity) || quantity <= 0) quantity = 1;
-            if (isNaN(unitPrice)) unitPrice = 0;
+            if (isNaN(unitPrice)) unitPrice = 55;
 
-            // 5. Data : Apmokėjimo terminas dienomis (jei nenurodyta - 10 d.)
+            // 5. Data : Apmokėjimo terminas dienomis (jei nenurodyta - šiandien ir 10 d.)
             const dateSegment = decodeSegment(segments[4]) || '';
             let dateRaw = '';
             let termDays = 10;
@@ -569,7 +610,7 @@
         }
 
         /**
-         * Renders the parsed invoice object into the DOM and syncs the edit form
+         * Renders the parsed invoice object into the DOM and syncs the edit form & payment button
          */
         function renderInvoice(data) {
             currentInvoiceState = data;
@@ -619,6 +660,16 @@
             document.getElementById('totalAdvance').textContent = `€ ${advanceFormatted}`;
             document.getElementById('totalPayable').textContent = `€ ${payableFormatted}`;
 
+            // Update Sticky "Apmokėti pavedimu" button href
+            const cleanPayableForUrl = Number.isInteger(data.payableAmount)
+                ? String(data.payableAmount)
+                : data.payableAmount.toFixed(2);
+            const payUrl = `https://pavedimu.lt/mindaugas/SF#${encodeURIComponent(data.sfNr)}/${encodeURIComponent(cleanPayableForUrl)}/`;
+            const btnPayTransfer = document.getElementById('btnPayTransfer');
+            if (btnPayTransfer) {
+                btnPayTransfer.href = payUrl;
+            }
+
             // Populate Edit Form inputs with current state
             populateEditForm(data);
         }
@@ -643,14 +694,14 @@
          * Builds the new hash URL from the edit form inputs
          */
         function buildHashFromForm() {
-            const buyerName = document.getElementById('editBuyerName').value.trim() || 'Pirkėjas';
+            const buyerName = document.getElementById('editBuyerName').value.trim() || 'UAB Mokėtojas';
             const buyerCode = document.getElementById('editBuyerCode').value.trim();
             const buyerVat = document.getElementById('editBuyerVat').value.trim();
-            const sfNr = document.getElementById('editSfNr').value.trim() || 'MRA-0001';
+            const sfNr = document.getElementById('editSfNr').value.trim() || 'MRSF-0001';
             const serviceName = document.getElementById('editServiceName').value.trim() || 'IT paslaugos';
 
             const priceRaw = document.getElementById('editPrice').value.trim().replace(',', '.');
-            const priceVal = priceRaw !== '' && !isNaN( parseFloat(priceRaw) ) ? parseFloat(priceRaw) : 0;
+            const priceVal = priceRaw !== '' && !isNaN( parseFloat(priceRaw) ) ? parseFloat(priceRaw) : 55;
 
             const qtyRaw = document.getElementById('editQty').value.trim().replace(',', '.');
             const qtyVal = qtyRaw !== '' && !isNaN( parseFloat(qtyRaw) ) && parseFloat(qtyRaw) > 0 ? parseFloat(qtyRaw) : 1;
@@ -689,7 +740,7 @@
         }
 
         /**
-         * Generates an A4 PDF and opens it in a new browser tab
+         * Generates a single-page A4 PDF with 18mm margins and opens it in a new browser tab
          */
         async function openPdfInNewTab() {
             const btnPdf = document.getElementById('btnPdf');
@@ -728,10 +779,14 @@
             btnPdf.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Ruošiamas PDF...</span>';
             btnPdf.disabled = true;
 
+            // Apply clean PDF export layout so html2pdf's 18mm margins are used without double-padding or page overflow
+            invoiceEl.classList.add('pdf-export-mode');
+
             const opt = {
-                margin: 0,
+                margin: [18, 18, 18, 18],
                 filename: `${sfNr}.pdf`,
                 image: { type: 'jpeg', quality: 0.98 },
+                pagebreak: { mode: ['avoid-all'] },
                 html2canvas: {
                     scale: 2,
                     useCORS: true,
@@ -746,7 +801,15 @@
             };
 
             try {
-                const pdfBlob = await html2pdf().set(opt).from(invoiceEl).outputPdf('blob');
+                const worker = html2pdf().set(opt).from(invoiceEl).toPdf();
+                const pdf = await worker.get('pdf');
+
+                // Guarantee single page (remove any trailing blank page if generated)
+                while (pdf.internal.getNumberOfPages() > 1) {
+                    pdf.deletePage(pdf.internal.getNumberOfPages());
+                }
+
+                const pdfBlob = await worker.output('blob');
                 const blobUrl = URL.createObjectURL(pdfBlob);
 
                 if (newTab && !newTab.closed) {
@@ -760,6 +823,7 @@
                     newTab.close();
                 }
             } finally {
+                invoiceEl.classList.remove('pdf-export-mode');
                 btnPdf.innerHTML = originalBtnHtml;
                 btnPdf.disabled = false;
             }
@@ -770,7 +834,7 @@
             // Set default hash if empty so URL bar immediately reflects structure
             if (!window.location.hash || window.location.hash.length <= 1) {
                 try {
-                    window.history.replaceState(null, '', DEFAULT_DEMO_HASH);
+                    window.history.replaceState(null, '', getDefaultHash());
                 } catch (e) {}
             }
 
