@@ -50,6 +50,32 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
             print-color-adjust: exact;
         }
 
+        /* Logo stilius */
+        .w512-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            background: #111;
+            border-radius: 50%;
+            text-decoration: none;
+            flex-shrink: 0;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .w512-logo:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.16);
+        }
+
+        .w512-logo img {
+            width: 26px;
+            height: 26px;
+            object-fit: contain;
+            display: block;
+        }
+
         /* A4 Invoice Sheet Styling */
         .invoice-sheet {
             font-family: 'Arimo', Arial, Helvetica, sans-serif;
@@ -208,6 +234,14 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
             body {
                 background-color: #ffffff; /* Paverčiame visą foną baltu, besiūliam įvaizdžiui */
             }
+            .w512-logo {
+                width: 38px;
+                height: 38px;
+            }
+            .w512-logo img {
+                width: 22px;
+                height: 22px;
+            }
             .invoice-sheet:not(.pdf-export-mode) {
                 width: 100%;
                 flex-grow: 1; /* Išsiplečia ir užpildo visą mobiliojo ekrano aukštį */
@@ -296,35 +330,41 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
 
     <!-- Top Control & Action Bar (Hidden in Print & PDF, high z-index so Edit Form overlays everything) -->
     <header class="no-print border-b border-slate-200 bg-white/95 backdrop-blur-sm sticky top-0 z-50" data-html2canvas-ignore="true">
-        <div class="max-w-[210mm] mx-auto px-4 py-2.5 flex flex-col gap-3">
+        <div class="max-w-[210mm] mx-auto px-4 py-2 flex flex-col gap-3">
             
-            <!-- Primary Row: 3 Action Buttons (Centered on Mobile, Right on Desktop) -->
-            <div class="flex items-center justify-center sm:justify-end gap-2.5">
-                <button type="button" id="btnToggleEdit" class="action-btn" title="Koreguoti sąskaitos duomenis">
-                    <i class="fa-regular fa-pen-to-square"></i>
-                    <span>Koreguoti</span>
-                </button>
+            <!-- Primary Row: Logo on the Left, 3 Action Buttons on the Right -->
+            <div class="flex items-center justify-between gap-2.5">
+                <a href="https://ruslys.lt" class="w512-logo" title="Grįžti į ruslys.lt">
+                    <img src="https://ruslys.lt/img/w512.png" alt="Logo">
+                </a>
 
-                <button type="button" id="btnPdf" class="action-btn" title="Generuoti PDF ir atidaryti naujame lange">
-                    <i class="fa-regular fa-file-pdf"></i>
-                    <span>PDF</span>
-                </button>
+                <div class="flex items-center gap-2 sm:gap-2.5">
+                    <button type="button" id="btnToggleEdit" class="action-btn" title="Koreguoti sąskaitos duomenis">
+                        <i class="fa-regular fa-pen-to-square"></i>
+                        <span>Koreguoti</span>
+                    </button>
 
-                <button type="button" id="btnPrint" class="action-btn" title="Atidaryti spausdinimo langą">
-                    <i class="fa-solid fa-print"></i>
-                    <span>Spausdinti</span>
-                </button>
+                    <button type="button" id="btnPdf" class="action-btn" title="Generuoti PDF ir atidaryti naujame lange">
+                        <i class="fa-regular fa-file-pdf"></i>
+                        <span>PDF</span>
+                    </button>
+
+                    <button type="button" id="btnPrint" class="action-btn" title="Atidaryti spausdinimo langą">
+                        <i class="fa-solid fa-print"></i>
+                        <span>Spausdinti</span>
+                    </button>
+                </div>
             </div>
 
-<!-- Pranešimas atidarius per Messenger / Facebook / Instagram -->
-<div id="messengerNotice" class="hidden pt-2.5 border-t" style="border-color: var(--amber-border);">
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs leading-relaxed">
-        <div style="color: var(--amber-accent);">
-            <i class="fa-solid fa-circle-info mr-1"></i>
-            <strong>Sąskaita atidaryta per „Messenger“.</strong> Ši programėlė neleidžia tiesiogiai atsisiųsti PDF ar spausdinti, tam naudokite numatytąją telefono naršyklę.
-        </div>
-    </div>
-</div>
+            <!-- Pranešimas atidarius per Messenger / Facebook / Instagram -->
+            <div id="messengerNotice" class="hidden pt-2.5 border-t" style="border-color: var(--amber-border);">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs leading-relaxed">
+                    <div style="color: var(--amber-accent);">
+                        <i class="fa-solid fa-circle-info mr-1"></i>
+                        <strong>Sąskaita atidaryta per „Messenger“.</strong> Ši programėlė neleidžia tiesiogiai atsisiųsti PDF ar spausdinti, tam naudokite numatytąją telefono naršyklę.
+                    </div>
+                </div>
+            </div>
             
             <!-- Collapsible Edit Form Panel -->
             <form id="editFormPanel" class="hidden pt-3 pb-2 border-t border-slate-200">
@@ -1115,48 +1155,48 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
         }
 
         /**
- * Aptinka, ar nuoroda atidaryta per Messenger, Facebook, Instagram vidinę naršyklę
- */
-function isInAppBrowser() {
-    const ua = navigator.userAgent || navigator.vendor || window.opera || '';
-    return /FBAN|FBAV|Messenger|Instagram/i.test(ua);
-}
+         * Aptinka, ar nuoroda atidaryta per Messenger, Facebook, Instagram vidinę naršyklę
+         */
+        function isInAppBrowser() {
+            const ua = navigator.userAgent || navigator.vendor || window.opera || '';
+            return /FBAN|FBAV|Messenger|Instagram/i.test(ua);
+        }
 
-/**
- * Bando atidaryti dabartinę sąskaitos nuorodą išorinėje telefono naršyklėje (Chrome / Safari)
- */
-function openInExternalBrowser() {
-    const targetUrl = window.location.href;
-    const ua = navigator.userAgent || '';
+        /**
+         * Bando atidaryti dabartinę sąskaitos nuorodą išorinėje telefono naršyklėje (Chrome / Safari)
+         */
+        function openInExternalBrowser() {
+            const targetUrl = window.location.href;
+            const ua = navigator.userAgent || '';
 
-    // 1. Android: Intent schema tiesiogiai atidaro numatytąją naršyklę (pvz. Chrome)
-    if (/Android/i.test(ua)) {
-        const cleanUrl = targetUrl.replace(/^https?:\/\//i, '');
-        window.location.href = `intent://${cleanUrl}#Intent;scheme=https;S.browser_fallback_url=${encodeURIComponent(targetUrl)};end`;
-        return;
-    }
+            // 1. Android: Intent schema tiesiogiai atidaro numatytąją naršyklę (pvz. Chrome)
+            if (/Android/i.test(ua)) {
+                const cleanUrl = targetUrl.replace(/^https?:\/\//i, '');
+                window.location.href = `intent://${cleanUrl}#Intent;scheme=https;S.browser_fallback_url=${encodeURIComponent(targetUrl)};end`;
+                return;
+            }
 
-    // 2. iOS (iPhone / iPad): x-safari-https schema iškviečia gimtąjį „Open in Safari?“ langą
-    if (/iPhone|iPad|iPod/i.test(ua)) {
-        window.location.href = targetUrl.replace(/^https?:\/\//i, 'x-safari-https://');
-        return;
-    }
+            // 2. iOS (iPhone / iPad): x-safari-https schema iškviečia gimtąjį „Open in Safari?“ langą
+            if (/iPhone|iPad|iPod/i.test(ua)) {
+                window.location.href = targetUrl.replace(/^https?:\/\//i, 'x-safari-https://');
+                return;
+            }
 
-    // 3. Atsarginis variantas kitiems įrenginiams
-    window.open(targetUrl, '_blank');
-}
+            // 3. Atsarginis variantas kitiems įrenginiams
+            window.open(targetUrl, '_blank');
+        }
 
-/**
- * Parodo Messenger įspėjimą ir trumpai jį paryškina, jei vartotojas spaudė PDF arba Spausdinti
- */
-function showMessengerNoticeAndRedirect() {
-    const notice = document.getElementById('messengerNotice');
-    if (notice) {
-        notice.classList.remove('hidden');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-    openInExternalBrowser();
-}
+        /**
+         * Parodo Messenger įspėjimą ir trumpai jį paryškina, jei vartotojas spaudė PDF arba Spausdinti
+         */
+        function showMessengerNoticeAndRedirect() {
+            const notice = document.getElementById('messengerNotice');
+            if (notice) {
+                notice.classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+            openInExternalBrowser();
+        }
         
         /**
          * Generates a single-page A4 PDF with 18mm margins and opens it in a new browser tab
@@ -1305,30 +1345,29 @@ function showMessengerNoticeAndRedirect() {
                 if (payBtnContainer) payBtnContainer.classList.remove('hidden');
             });
 
-// Jei atidaryta per Messenger – iškart parodome informacinę juostą viršuje
-if (isInAppBrowser()) {
-    const notice = document.getElementById('messengerNotice');
-    if (notice) notice.classList.remove('hidden');
-}
+            // Jei atidaryta per Messenger – iškart parodome informacinę juostą viršuje
+            if (isInAppBrowser()) {
+                const notice = document.getElementById('messengerNotice');
+                if (notice) notice.classList.remove('hidden');
+            }
 
+            // 7. Print button -> Jei Messenger, permeta į išorinę naršyklę; jei įprasta naršyklė -> window.print()
+            document.getElementById('btnPrint').addEventListener('click', () => {
+                if (isInAppBrowser()) {
+                    showMessengerNoticeAndRedirect();
+                    return;
+                }
+                window.print();
+            });
 
-// 7. Print button -> Jei Messenger, permeta į išorinę naršyklę; jei įprasta naršyklė -> window.print()
-document.getElementById('btnPrint').addEventListener('click', () => {
-    if (isInAppBrowser()) {
-        showMessengerNoticeAndRedirect();
-        return;
-    }
-    window.print();
-});
-
-// 8. PDF button -> Jei Messenger, nekuriame tuščio lango ir permetame į naršyklę; kitaip -> openPdfInNewTab()
-document.getElementById('btnPdf').addEventListener('click', () => {
-    if (isInAppBrowser()) {
-        showMessengerNoticeAndRedirect();
-        return;
-    }
-    openPdfInNewTab();
-});
+            // 8. PDF button -> Jei Messenger, nekuriame tuščio lango ir permetame į naršyklę; kitaip -> openPdfInNewTab()
+            document.getElementById('btnPdf').addEventListener('click', () => {
+                if (isInAppBrowser()) {
+                    showMessengerNoticeAndRedirect();
+                    return;
+                }
+                openPdfInNewTab();
+            });
 
             // 9. Listen for manual hash changes in browser address bar
             window.addEventListener('hashchange', () => {
