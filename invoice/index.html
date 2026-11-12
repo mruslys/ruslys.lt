@@ -1121,8 +1121,7 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
                     if (navigator.canShare({ files: [pdfFile] })) {
                         try {
                             await navigator.share({
-                                files: [pdfFile],
-                                title: fileName
+                                files: [pdfFile] // Paliekame TIK failą (be title), kad nesukurtų text.txt
                             });
                             return;
                         } catch (shareErr) {
