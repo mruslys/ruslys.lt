@@ -336,28 +336,33 @@ layout: default
                         <input type="number" id="editTerm" step="1" min="0" class="form-input" placeholder="10">
                     </div>
 
-                    <!-- Paslaugos pavadinimas -->
-                    <div class="sm:col-span-2 md:col-span-3">
-                        <label for="editServiceName" class="form-label">Paslaugos pavadinimas</label>
-                        <input type="text" id="editServiceName" class="form-input" placeholder="IT paslaugos" required>
-                    </div>
-
-                    <!-- Kaina (€) -->
-                    <div>
-                        <label for="editPrice" class="form-label">Kaina (€)</label>
-                        <input type="number" id="editPrice" step="0.01" class="form-input" placeholder="55.00" required>
-                    </div>
-
-                    <!-- Kiekis -->
-                    <div>
-                        <label for="editQty" class="form-label">Kiekis</label>
-                        <input type="number" id="editQty" step="any" min="0.01" class="form-input" placeholder="1">
-                    </div>
-
                     <!-- Sumokėta avansu (€) -->
                     <div>
                         <label for="editAdvance" class="form-label">Sumokėta avansu (€)</label>
                         <input type="number" id="editAdvance" step="0.01" min="0" class="form-input" placeholder="0.00">
+                    </div>
+                </div>
+
+                <!-- Dynamic Items Section -->
+                <div class="mt-4 pt-3 border-t border-slate-200">
+                    <!-- Column Headers (Visible on sm+) -->
+                    <div class="hidden sm:grid sm:grid-cols-12 gap-2 mb-1.5">
+                        <div class="sm:col-span-5 form-label mb-0">Prekė arba paslauga</div>
+                        <div class="sm:col-span-2 form-label mb-0">Kiekis</div>
+                        <div class="sm:col-span-2 form-label mb-0">Mato vnt.</div>
+                        <div class="sm:col-span-2 form-label mb-0">Kaina (€)</div>
+                        <div class="sm:col-span-1"></div>
+                    </div>
+
+                    <!-- Dynamic Rows Container -->
+                    <div id="editItemsContainer" class="space-y-2.5 sm:space-y-2"></div>
+
+                    <!-- Add Row Button -->
+                    <div class="mt-2.5">
+                        <button type="button" id="btnAddItemRow" class="action-btn text-xs py-1 px-2.5">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Pridėti eilutę</span>
+                        </button>
                     </div>
                 </div>
 
@@ -428,21 +433,21 @@ layout: default
                     <thead>
                         <tr>
                             <th class="w-9 sm:w-12 text-center">Eil<br>Nr.</th>
-                            <th class="text-left">Prekės, paslaugos pavadinimas</th>
-                            <th class="w-11 sm:w-16 text-center">Kodas</th>
-                            <th class="w-11 sm:w-16 text-center">Kiekis</th>
+                            <th class="text-left">Prekė arba paslauga</th>
+                            <th class="w-11 sm:w-16 text-right">Kiekis</th>
+                            <th class="w-9 sm:w-12 text-left"></th>
                             <th class="w-16 sm:w-24 text-right">Kaina</th>
                             <th class="w-16 sm:w-24 text-right">Iš viso</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="invoiceItemsBody">
                         <tr>
                             <td class="text-center">1</td>
-                            <td id="serviceName" class="text-left">IT paslaugos</td>
-                            <td class="text-center">Ps.</td>
-                            <td id="serviceQty" class="text-center">1</td>
-                            <td id="servicePrice" class="text-right whitespace-nowrap">€ 55.00</td>
-                            <td id="serviceTotal" class="text-right whitespace-nowrap">€ 55.00</td>
+                            <td class="text-left">IT paslaugos</td>
+                            <td class="text-right">1</td>
+                            <td class="text-left">vnt.</td>
+                            <td class="text-right whitespace-nowrap">€ 55.00</td>
+                            <td class="text-right whitespace-nowrap">€ 55.00</td>
                         </tr>
                     </tbody>
                 </table>
@@ -478,7 +483,7 @@ layout: default
             <!-- Sticky Bottom Payment Button (Inside white invoice sheet, below issued-by line) -->
             <div id="payBtnContainer" class="no-print sticky bottom-5 z-10 mt-10 flex justify-center w-full pointer-events-none" data-html2canvas-ignore="true">
                 <a id="btnPayTransfer" href="https://pavedimu.lt/mindaugas/SF%20MRSF-0001/55.00/" target="_blank" rel="noopener noreferrer" class="pay-btn pointer-events-auto">
-                    <span>Apmokėti pavedimu</span>
+                    <span>Apmokėti</span>
                 </a>
             </div>
 
@@ -499,6 +504,27 @@ layout: default
             } catch (e) {
                 return raw.trim();
             }
+        }
+
+        /**
+         * Normalizes unit of measurement (with or without dot) to standard display format: 'vnt.', 'val.', 'mėn.'
+         */
+        function normalizeUnit(rawUnit) {
+            if (!rawUnit) return 'vnt.';
+            const cleaned = rawUnit.trim().toLowerCase().replace(/\.+$/, '');
+            if (cleaned === 'val') return 'val.';
+            if (cleaned === 'mėn' || cleaned === 'men') return 'mėn.';
+            if (cleaned === 'vnt') return 'vnt.';
+            return 'vnt.';
+        }
+
+        /**
+         * Checks whether a string looks like a supported unit of measurement
+         */
+        function isUnitToken(str) {
+            if (!str) return false;
+            const cleaned = str.trim().toLowerCase().replace(/\.+$/, '');
+            return cleaned === 'vnt' || cleaned === 'val' || cleaned === 'mėn' || cleaned === 'men';
         }
 
         /**
@@ -554,11 +580,11 @@ layout: default
 
         /**
          * Builds the default hash dynamically with today's date (encoded as URL-safe Base64)
-         * Underlying format: {pirkejas}/{imones_kodas}:{pvm_kodas}/{sf_nr}/{paslaugos_pavadinimas}:{kaina}:{kiekis}/{data}:{apmokejimo_terminas}/{avansas}
+         * Underlying format: {pirkejas}/{imones_kodas}:{pvm_kodas}/{sf_nr}/{preke}:{kiekis}:{mato_vnt}:{kaina}/{data}:{apmokejimo_terminas}/{avansas}
          */
         function getDefaultHash() {
             const todayStr = formatDateDot(new Date());
-            const rawDefaultPath = `UAB%20Mok%C4%97tojas/000007/MRSF-0001/IT%20paslaugos:55:1/${todayStr}:10/0`;
+            const rawDefaultPath = `UAB%20Mok%C4%97tojas/000007/MRSF-0001/IT%20paslaugos:1:vnt.:55/${todayStr}:10/0`;
             return `#/${encodeBase64Url(rawDefaultPath)}`;
         }
 
@@ -603,6 +629,72 @@ layout: default
         }
 
         /**
+         * Parses a single item entry string.
+         * Primary format: preke arba paslauga:kiekis:mato vnt(be tasko arba su):kaina
+         * Also supports legacy format: preke:kaina:kiekis
+         */
+        function parseSingleItem(rawItemStr) {
+            const parts = (rawItemStr || '').split(':');
+            let name = 'IT paslaugos';
+            let quantity = 1;
+            let unit = 'vnt.';
+            let unitPrice = 55;
+
+            if (
+                parts.length >= 4 &&
+                isNumericPart(parts[parts.length - 1]) &&
+                isNumericPart(parts[parts.length - 3])
+            ) {
+                // Format: pavadinimas : kiekis : mato_vnt : kaina
+                unitPrice = parseFloat(parts[parts.length - 1].trim().replace(',', '.'));
+                unit = normalizeUnit(parts[parts.length - 2]);
+                quantity = parseFloat(parts[parts.length - 3].trim().replace(',', '.'));
+                name = parts.slice(0, -3).join(':').trim() || 'IT paslaugos';
+            } else if (
+                parts.length >= 3 &&
+                isNumericPart(parts[parts.length - 1]) &&
+                isUnitToken(parts[parts.length - 2])
+            ) {
+                // Format without explicit quantity: pavadinimas : mato_vnt : kaina
+                unitPrice = parseFloat(parts[parts.length - 1].trim().replace(',', '.'));
+                unit = normalizeUnit(parts[parts.length - 2]);
+                quantity = 1;
+                name = parts.slice(0, -2).join(':').trim() || 'IT paslaugos';
+            } else if (
+                parts.length >= 3 &&
+                isNumericPart(parts[parts.length - 1]) &&
+                isNumericPart(parts[parts.length - 2])
+            ) {
+                // Legacy format: pavadinimas : kaina : kiekis
+                quantity = parseFloat(parts[parts.length - 1].trim().replace(',', '.'));
+                unitPrice = parseFloat(parts[parts.length - 2].trim().replace(',', '.'));
+                unit = 'vnt.';
+                name = parts.slice(0, -2).join(':').trim() || 'IT paslaugos';
+            } else if (
+                parts.length >= 2 &&
+                isNumericPart(parts[parts.length - 1])
+            ) {
+                unitPrice = parseFloat(parts[parts.length - 1].trim().replace(',', '.'));
+                quantity = 1;
+                unit = 'vnt.';
+                name = parts.slice(0, -1).join(':').trim() || 'IT paslaugos';
+            } else if (rawItemStr && rawItemStr.trim()) {
+                name = rawItemStr.trim();
+            }
+
+            if (isNaN(quantity) || quantity <= 0) quantity = 1;
+            if (isNaN(unitPrice)) unitPrice = 55;
+
+            return {
+                name,
+                quantity,
+                unit,
+                unitPrice,
+                lineTotal: quantity * unitPrice
+            };
+        }
+
+        /**
          * Extracts the hash path from window.location.hash
          */
         function extractRawHashFromLocation() {
@@ -616,7 +708,9 @@ layout: default
          * Parses the hash string into structured invoice fields.
          * Supports BOTH:
          * 1. Encoded URL-safe Base64: #/{koduotas-tekstas}
-         * 2. Plain slash parameters: #/{pirkejas}/{imones_kodas}:{pvm_kodas}/{sf_nr}/{paslaugos_pavadinimas}:{kaina}:{kiekis}/{data}:{apmokejimo_terminas}/{avansas}
+         * 2. Plain slash parameters:
+         *    #/{pirkejas}/{imones_kodas}:{pvm_kodas}/{sf_nr}/{preke}:{kiekis}:{mato_vnt}:{kaina}/{data}:{apmokejimo_terminas}/{avansas}
+         *    Multiple items in segment 4 can be separated by ';'
          */
         function parseInvoiceHash(rawHash) {
             const hashToUse = (rawHash && rawHash.trim().length > 1) ? rawHash.trim() : getDefaultHash();
@@ -650,36 +744,16 @@ layout: default
             // 3. SF numeris (default: MRSF-0001)
             const sfNr = decodeSegment(segments[2]) || 'MRSF-0001';
 
-            // 4. Paslaugos pavadinimas : kaina : kiekis (parsed from the end; default: IT paslaugos, 55, 1)
+            // 4. Prekės / paslaugos (gali būti kelios eilutės atskirtos ';')
             const serviceSegment = decodeSegment(segments[3]) || '';
-            const serviceParts = serviceSegment.split(':');
-            let serviceName = 'IT paslaugos';
-            let unitPrice = 55;
-            let quantity = 1;
+            const rawItemEntries = serviceSegment
+                .split(';')
+                .map((s) => s.trim())
+                .filter(Boolean);
 
-            if (
-                serviceParts.length >= 3 &&
-                isNumericPart(serviceParts[serviceParts.length - 1]) &&
-                isNumericPart(serviceParts[serviceParts.length - 2])
-            ) {
-                quantity = parseFloat(serviceParts[serviceParts.length - 1].trim().replace(',', '.'));
-                unitPrice = parseFloat(serviceParts[serviceParts.length - 2].trim().replace(',', '.'));
-                serviceName = serviceParts.slice(0, -2).join(':').trim() || 'IT paslaugos';
-            } else if (
-                serviceParts.length >= 2 &&
-                isNumericPart(serviceParts[serviceParts.length - 1])
-            ) {
-                unitPrice = parseFloat(serviceParts[serviceParts.length - 1].trim().replace(',', '.'));
-                quantity = 1;
-                serviceName = serviceParts.slice(0, -1).join(':').trim() || 'IT paslaugos';
-            } else if (serviceSegment.trim()) {
-                serviceName = serviceSegment.trim();
-                unitPrice = 55;
-                quantity = 1;
-            }
-
-            if (isNaN(quantity) || quantity <= 0) quantity = 1;
-            if (isNaN(unitPrice)) unitPrice = 55;
+            const items = rawItemEntries.length > 0
+                ? rawItemEntries.map(parseSingleItem)
+                : [parseSingleItem('')];
 
             // 5. Data : Apmokėjimo terminas dienomis (jei nenurodyta - šiandien ir 10 d.)
             const dateSegment = decodeSegment(segments[4]) || '';
@@ -712,7 +786,7 @@ layout: default
             }
 
             // Skaičiavimai
-            const totalAmount = quantity * unitPrice;
+            const totalAmount = items.reduce((sum, item) => sum + item.lineTotal, 0);
             const payableAmount = totalAmount - advanceAmount;
 
             return {
@@ -720,9 +794,7 @@ layout: default
                 buyerCode,
                 buyerVat,
                 sfNr,
-                serviceName,
-                unitPrice,
-                quantity,
+                items,
                 formattedDate,
                 termDays,
                 formattedDueDate,
@@ -766,24 +838,57 @@ layout: default
                 vatRow.style.display = 'none';
             }
 
-            // Service table row
-            document.getElementById('serviceName').textContent = data.serviceName;
-            document.getElementById('serviceQty').textContent = String(data.quantity);
+            // Render dynamic service/product rows with auto-generated line numbers
+            const tbody = document.getElementById('invoiceItemsBody');
+            tbody.innerHTML = '';
 
-            const priceFormatted = data.unitPrice.toFixed(2);
+            data.items.forEach((item, index) => {
+                const tr = document.createElement('tr');
+
+                const tdNum = document.createElement('td');
+                tdNum.className = 'text-center';
+                tdNum.textContent = String(index + 1);
+
+                const tdName = document.createElement('td');
+                tdName.className = 'text-left';
+                tdName.textContent = item.name;
+
+                const tdQty = document.createElement('td');
+                tdQty.className = 'text-right';
+                tdQty.textContent = String(item.quantity);
+
+                const tdUnit = document.createElement('td');
+                tdUnit.className = 'text-left';
+                tdUnit.textContent = normalizeUnit(item.unit);
+
+                const tdPrice = document.createElement('td');
+                tdPrice.className = 'text-right whitespace-nowrap';
+                tdPrice.textContent = `€ ${item.unitPrice.toFixed(2)}`;
+
+                const tdTotal = document.createElement('td');
+                tdTotal.className = 'text-right whitespace-nowrap';
+                tdTotal.textContent = `€ ${item.lineTotal.toFixed(2)}`;
+
+                tr.appendChild(tdNum);
+                tr.appendChild(tdName);
+                tr.appendChild(tdQty);
+                tr.appendChild(tdUnit);
+                tr.appendChild(tdPrice);
+                tr.appendChild(tdTotal);
+
+                tbody.appendChild(tr);
+            });
+
             const totalFormatted = data.totalAmount.toFixed(2);
             const advanceFormatted = data.advanceAmount.toFixed(2);
             const payableFormatted = data.payableAmount.toFixed(2);
-
-            document.getElementById('servicePrice').textContent = `€ ${priceFormatted}`;
-            document.getElementById('serviceTotal').textContent = `€ ${totalFormatted}`;
 
             // Totals summary
             document.getElementById('totalGross').textContent = `€ ${totalFormatted}`;
             document.getElementById('totalAdvance').textContent = `€ ${advanceFormatted}`;
             document.getElementById('totalPayable').textContent = `€ ${payableFormatted}`;
 
-            // Update Sticky "Apmokėti pavedimu" button href (uses SF%20 prefix)
+            // Update Sticky "Apmokėti" button href (uses SF%20 prefix)
             const payUrl = `https://pavedimu.lt/mindaugas/SF%20${encodeURIComponent(data.sfNr)}/${encodeURIComponent(payableFormatted)}/`;
             const btnPayTransfer = document.getElementById('btnPayTransfer');
             if (btnPayTransfer) {
@@ -795,6 +900,78 @@ layout: default
         }
 
         /**
+         * Creates a single editable item row element for the edit form
+         */
+        function createItemRowElement(item = { name: '', quantity: 1, unit: 'vnt.', unitPrice: '' }) {
+            const row = document.createElement('div');
+            row.className = 'item-edit-row grid grid-cols-1 sm:grid-cols-12 gap-2 items-end bg-slate-50 sm:bg-transparent p-2.5 sm:p-0 rounded-md border border-slate-200 sm:border-none';
+
+            const normalizedUnit = normalizeUnit(item.unit);
+
+            row.innerHTML = `
+                <div class="sm:col-span-5">
+                    <label class="form-label sm:hidden">Prekė arba paslauga</label>
+                    <input type="text" class="form-input item-name-input" placeholder="IT paslaugos" required>
+                </div>
+                <div class="grid grid-cols-3 sm:contents gap-2">
+                    <div class="sm:col-span-2">
+                        <label class="form-label sm:hidden">Kiekis</label>
+                        <input type="number" step="any" min="0.01" class="form-input item-qty-input" placeholder="1" required>
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="form-label sm:hidden">Mato vnt.</label>
+                        <select class="form-input item-unit-input">
+                            <option value="vnt.">vnt.</option>
+                            <option value="val.">val.</option>
+                            <option value="mėn.">mėn.</option>
+                        </select>
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="form-label sm:hidden">Kaina (€)</label>
+                        <input type="number" step="0.01" class="form-input item-price-input" placeholder="55.00" required>
+                    </div>
+                </div>
+                <div class="sm:col-span-1 flex justify-end sm:justify-center">
+                    <button type="button" class="action-btn btn-remove-item text-slate-500 hover:text-red-600 hover:border-red-300 px-2.5 py-1.5" title="Pašalinti eilutę">
+                        <i class="fa-solid fa-trash-can text-xs"></i>
+                        <span class="sm:hidden text-xs">Pašalinti</span>
+                    </button>
+                </div>
+            `;
+
+            row.querySelector('.item-name-input').value = item.name || '';
+            row.querySelector('.item-qty-input').value = item.quantity !== undefined ? item.quantity : 1;
+            row.querySelector('.item-unit-input').value = normalizedUnit;
+            row.querySelector('.item-price-input').value = item.unitPrice !== undefined ? item.unitPrice : '';
+
+            row.querySelector('.btn-remove-item').addEventListener('click', () => {
+                const container = document.getElementById('editItemsContainer');
+                if (container.querySelectorAll('.item-edit-row').length > 1) {
+                    row.remove();
+                    updateRemoveButtonsState();
+                }
+            });
+
+            return row;
+        }
+
+        /**
+         * Disables the remove button when only 1 item row remains
+         */
+        function updateRemoveButtonsState() {
+            const container = document.getElementById('editItemsContainer');
+            const rows = container.querySelectorAll('.item-edit-row');
+            rows.forEach((row) => {
+                const btn = row.querySelector('.btn-remove-item');
+                if (btn) {
+                    btn.disabled = rows.length <= 1;
+                    btn.style.opacity = rows.length <= 1 ? '0.35' : '1';
+                    btn.style.pointerEvents = rows.length <= 1 ? 'none' : 'auto';
+                }
+            });
+        }
+
+        /**
          * Populates the collapsible edit form fields with current invoice data
          */
         function populateEditForm(data) {
@@ -802,12 +979,22 @@ layout: default
             document.getElementById('editBuyerCode').value = data.buyerCode || '';
             document.getElementById('editBuyerVat').value = data.buyerVat || '';
             document.getElementById('editSfNr').value = data.sfNr || '';
-            document.getElementById('editServiceName').value = data.serviceName || '';
-            document.getElementById('editPrice').value = data.unitPrice !== undefined ? data.unitPrice : '';
-            document.getElementById('editQty').value = data.quantity !== undefined ? data.quantity : 1;
             document.getElementById('editDate').value = data.formattedDate || '';
             document.getElementById('editTerm').value = data.termDays !== undefined ? data.termDays : 10;
             document.getElementById('editAdvance').value = data.advanceAmount ? data.advanceAmount : '';
+
+            const container = document.getElementById('editItemsContainer');
+            container.innerHTML = '';
+
+            const itemsToRender = (data.items && data.items.length > 0)
+                ? data.items
+                : [{ name: 'IT paslaugos', quantity: 1, unit: 'vnt.', unitPrice: 55 }];
+
+            itemsToRender.forEach((item) => {
+                container.appendChild(createItemRowElement(item));
+            });
+
+            updateRemoveButtonsState();
         }
 
         /**
@@ -818,13 +1005,6 @@ layout: default
             const buyerCode = document.getElementById('editBuyerCode').value.trim();
             const buyerVat = document.getElementById('editBuyerVat').value.trim();
             const sfNr = document.getElementById('editSfNr').value.trim() || 'MRSF-0001';
-            const serviceName = document.getElementById('editServiceName').value.trim() || 'IT paslaugos';
-
-            const priceRaw = document.getElementById('editPrice').value.trim().replace(',', '.');
-            const priceVal = priceRaw !== '' && !isNaN(parseFloat(priceRaw)) ? parseFloat(priceRaw) : 55;
-
-            const qtyRaw = document.getElementById('editQty').value.trim().replace(',', '.');
-            const qtyVal = qtyRaw !== '' && !isNaN(parseFloat(qtyRaw)) && parseFloat(qtyRaw) > 0 ? parseFloat(qtyRaw) : 1;
 
             const dateRaw = document.getElementById('editDate').value.trim();
             const parsedDate = parseInvoiceDate(dateRaw);
@@ -835,6 +1015,24 @@ layout: default
 
             const advRaw = document.getElementById('editAdvance').value.trim().replace(',', '.');
             const advVal = advRaw !== '' && !isNaN(parseFloat(advRaw)) && parseFloat(advRaw) > 0 ? parseFloat(advRaw) : 0;
+
+            // Collect dynamic items
+            const rows = document.querySelectorAll('#editItemsContainer .item-edit-row');
+            const encodedItems = [];
+
+            rows.forEach((row) => {
+                const name = row.querySelector('.item-name-input').value.trim() || 'IT paslaugos';
+                const qtyRaw = row.querySelector('.item-qty-input').value.trim().replace(',', '.');
+                const qtyVal = qtyRaw !== '' && !isNaN(parseFloat(qtyRaw)) && parseFloat(qtyRaw) > 0 ? parseFloat(qtyRaw) : 1;
+                const unitVal = normalizeUnit(row.querySelector('.item-unit-input').value);
+                const priceRaw = row.querySelector('.item-price-input').value.trim().replace(',', '.');
+                const priceVal = priceRaw !== '' && !isNaN(parseFloat(priceRaw)) ? parseFloat(priceRaw) : 55;
+
+                // Format: preke arba paslauga:kiekis:mato vnt:kaina
+                encodedItems.push(
+                    `${encodeURIComponent(name)}:${encodeURIComponent(String(qtyVal))}:${encodeURIComponent(unitVal)}:${encodeURIComponent(String(priceVal))}`
+                );
+            });
 
             // Segment 1: Pirkėjas
             const seg1 = encodeURIComponent(buyerName);
@@ -847,8 +1045,8 @@ layout: default
             // Segment 3: SF Nr
             const seg3 = encodeURIComponent(sfNr);
 
-            // Segment 4: Paslaugos pavadinimas : kaina : kiekis
-            const seg4 = `${encodeURIComponent(serviceName)}:${encodeURIComponent(String(priceVal))}:${encodeURIComponent(String(qtyVal))}`;
+            // Segment 4: Prekė arba paslauga : kiekis : mato vnt : kaina (kelios eilutės atskirtos ';')
+            const seg4 = encodedItems.join(';');
 
             // Segment 5: Data : terminas
             const seg5 = `${encodeURIComponent(dateFormatted)}:${encodeURIComponent(String(termVal))}`;
@@ -966,7 +1164,14 @@ layout: default
             const invoiceData = parseInvoiceHash(initialHash);
             renderInvoice(invoiceData);
 
-            // 2. Toggle Edit Form Panel
+            // 2. Add New Item Row button in Edit Form
+            document.getElementById('btnAddItemRow').addEventListener('click', () => {
+                const container = document.getElementById('editItemsContainer');
+                container.appendChild(createItemRowElement({ name: '', quantity: 1, unit: 'vnt.', unitPrice: '' }));
+                updateRemoveButtonsState();
+            });
+
+            // 3. Toggle Edit Form Panel
             const editFormPanel = document.getElementById('editFormPanel');
             const payBtnContainer = document.getElementById('payBtnContainer');
             document.getElementById('btnToggleEdit').addEventListener('click', () => {
@@ -980,13 +1185,13 @@ layout: default
                 }
             });
 
-            // 3. Cancel Edit button
+            // 4. Cancel Edit button
             document.getElementById('btnCancelEdit').addEventListener('click', () => {
                 editFormPanel.classList.add('hidden');
                 if (payBtnContainer) payBtnContainer.classList.remove('hidden');
             });
 
-            // 4. Submit Edit Form -> Update Hash to #/koduotas-tekstas & Re-render
+            // 5. Submit Edit Form -> Update Hash to #/koduotas-tekstas & Re-render
             editFormPanel.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const newHash = buildHashFromForm();
@@ -997,17 +1202,17 @@ layout: default
                 if (payBtnContainer) payBtnContainer.classList.remove('hidden');
             });
 
-            // 5. Print button -> Native browser print dialog
+            // 6. Print button -> Native browser print dialog
             document.getElementById('btnPrint').addEventListener('click', () => {
                 window.print();
             });
 
-            // 6. PDF button -> Generate & open PDF in new tab
+            // 7. PDF button -> Generate & open PDF in new tab
             document.getElementById('btnPdf').addEventListener('click', () => {
                 openPdfInNewTab();
             });
 
-            // 7. Listen for manual hash changes in browser address bar
+            // 8. Listen for manual hash changes in browser address bar
             window.addEventListener('hashchange', () => {
                 const parsed = parseInvoiceHash(extractRawHashFromLocation());
                 renderInvoice(parsed);
