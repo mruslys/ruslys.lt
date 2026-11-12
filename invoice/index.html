@@ -37,7 +37,6 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
     <style>
         :root {
             --amber-accent: #d97706;
-            --amber-border: rgba(217, 119, 6, 0.35);
         }
 
         body {
@@ -228,16 +227,16 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
         /* Responsive adjustments for smaller mobile screens (excludes PDF export mode) */
         @media screen and (max-width: 820px) {
             body {
-                background-color: #ffffff; /* Paverčiame visą foną baltu, besiūliam įvaizdžiui */
+                background-color: #ffffff;
             }
             .invoice-sheet:not(.pdf-export-mode) {
                 width: 100%;
-                flex-grow: 1; /* Išsiplečia ir užpildo visą mobiliojo ekrano aukštį */
+                flex-grow: 1;
                 height: auto;
                 padding: 18px 14px 26px 14px;
                 border: none;
                 border-radius: 0;
-                box-shadow: none; /* Pašaliname šešėlį */
+                box-shadow: none;
                 font-size: 11px;
                 line-height: 1.4;
             }
@@ -323,38 +322,23 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
         }
     </style>
 </head>
-<body class="min-h-[100dvh] flex flex-col justify-between"> <!-- Naudojame 100dvh saugiam prisitaikymui -->
+<body class="min-h-[100dvh] flex flex-col justify-between">
 
-    <!-- Top Control & Action Bar (Hidden in Print & PDF, high z-index so Edit Form overlays everything) -->
+    <!-- Top Control & Action Bar (Hidden in Print & PDF) -->
     <header class="no-print border-b border-slate-200 bg-white/95 backdrop-blur-sm sticky top-0 z-50" data-html2canvas-ignore="true">
         <div class="max-w-[210mm] mx-auto px-4 py-2.5 flex flex-col gap-3">
             
-            <!-- Primary Row: 3 Action Buttons (Centered on Mobile, Right on Desktop) -->
+            <!-- Primary Row: 2 Action Buttons (Centered on Mobile, Right on Desktop) -->
             <div class="flex items-center justify-center sm:justify-end gap-2.5">
                 <button type="button" id="btnToggleEdit" class="action-btn" title="Koreguoti sąskaitos duomenis">
                     <i class="fa-regular fa-pen-to-square"></i>
                     <span>Koreguoti</span>
                 </button>
 
-                <button type="button" id="btnPdf" class="action-btn" title="Generuoti PDF ir atidaryti naujame lange">
-                    <i class="fa-regular fa-file-pdf"></i>
-                    <span>PDF</span>
+                <button type="button" id="btnDownload" class="action-btn" title="Atsisiųsti sąskaitą PDF formatu">
+                    <i class="fa-solid fa-download"></i>
+                    <span>Atsisiųsti</span>
                 </button>
-
-                <button type="button" id="btnPrint" class="action-btn" title="Atidaryti spausdinimo langą">
-                    <i class="fa-solid fa-print"></i>
-                    <span>Spausdinti</span>
-                </button>
-            </div>
-
-            <!-- Pranešimas atidarius per Messenger / Facebook / Instagram -->
-            <div id="messengerNotice" class="hidden pt-2.5 border-t" style="border-color: var(--amber-border);">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs leading-relaxed">
-                    <div style="color: var(--amber-accent);">
-                        <i class="fa-solid fa-circle-info mr-1"></i>
-                        <strong>Sąskaita atidaryta per „Messenger“.</strong> Ši programėlė neleidžia tiesiogiai atsisiųsti PDF ar spausdinti, tam naudokite numatytąją telefono naršyklę.
-                    </div>
-                </div>
             </div>
             
             <!-- Collapsible Edit Form Panel -->
@@ -445,7 +429,7 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
         </div>
     </header>
 
-    <!-- Main Workspace Wrapper (py-0 mobiliems, kad prisiglaustų) -->
+    <!-- Main Workspace Wrapper -->
     <main class="flex-1 flex flex-col w-full py-0 sm:py-8 px-0 sm:px-4">
         
         <!-- A4 Invoice Sheet -->
@@ -486,7 +470,7 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
                 </div>
             </section>
 
-            <!-- DUE DATE ROW: Always right-aligned on both mobile and desktop -->
+            <!-- DUE DATE ROW -->
             <section class="flex justify-end text-right mt-3 sm:mt-4 mb-2">
                 <div class="whitespace-nowrap">
                     <span class="font-bold mr-3 sm:mr-4">Apmokėti iki:</span>
@@ -540,14 +524,14 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
                 </table>
             </section>
 
-            <!-- ISSUED BY LINE (Placed below totals block, on the left side) -->
+            <!-- ISSUED BY LINE -->
             <section class="mt-6 sm:mt-8">
                 <div>
                     <span class="font-bold">Sąskaitą suformavo</span> - Mindaugas Ruslys
                 </div>
             </section>
 
-            <!-- Sticky Bottom Payment Button (Inside white invoice sheet, below issued-by line) -->
+            <!-- Sticky Bottom Payment Button -->
             <div id="payBtnContainer" class="no-print sticky bottom-5 z-10 mt-10 flex justify-center w-full pointer-events-none" data-html2canvas-ignore="true">
                 <a id="btnPayTransfer" href="https://pavedimu.lt/mindaugas/SF%20MRSF-0001/55.00/" target="_blank" rel="noopener noreferrer" class="pay-btn pointer-events-auto">
                     <i class="fa-solid fa-money-bill-transfer"></i>
@@ -559,12 +543,8 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
     </main>
 
     <script>
-        // Holds current parsed state for populating the edit form
         let currentInvoiceState = null;
 
-        /**
-         * Safely decodes a URL segment
-         */
         function decodeSegment(raw) {
             if (!raw) return '';
             try {
@@ -574,9 +554,6 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
             }
         }
 
-        /**
-         * Normalizes unit of measurement (with or without dot) to standard display format: 'vnt.', 'val.', 'mėn.'
-         */
         function normalizeUnit(rawUnit) {
             if (!rawUnit) return 'val.';
             const cleaned = rawUnit.trim().toLowerCase().replace(/\.+$/, '');
@@ -586,18 +563,12 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
             return 'val.';
         }
 
-        /**
-         * Checks whether a string looks like a supported unit of measurement
-         */
         function isUnitToken(str) {
             if (!str) return false;
             const cleaned = str.trim().toLowerCase().replace(/\.+$/, '');
             return cleaned === 'vnt' || cleaned === 'val' || cleaned === 'mėn' || cleaned === 'men';
         }
 
-        /**
-         * Encodes a UTF-8 string into URL-safe Base64 (replaces + with -, / with _, strips =)
-         */
         function encodeBase64Url(str) {
             const bytes = new TextEncoder().encode(str);
             let binary = '';
@@ -610,10 +581,6 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
                 .replace(/=+$/, '');
         }
 
-        /**
-         * Attempts to decode a single-segment URL-safe Base64 string back into the slash-delimited invoice path.
-         * Returns the decoded path string if valid, or null if the input is not an encoded invoice payload.
-         */
         function tryDecodeBase64Url(token) {
             if (!token || token.includes('/')) return null;
             const trimmed = token.trim();
@@ -636,9 +603,6 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
             return null;
         }
 
-        /**
-         * Formats a Date object as Lithuanian standard invoice date YYYY.MM.DD
-         */
         function formatDateDot(dateObj) {
             const yyyy = dateObj.getFullYear();
             const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
@@ -646,20 +610,12 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
             return `${yyyy}.${mm}.${dd}`;
         }
 
-        /**
-         * Builds the default hash dynamically with today's date (encoded as URL-safe Base64)
-         * Underlying format: {pirkejas}/{imones_kodas}:{pvm_kodas}/{sf_nr}/{preke}:{kiekis}:{mato_vnt}:{kaina}/{data}:{apmokejimo_terminas}/{avansas}
-         */
         function getDefaultHash() {
             const todayStr = formatDateDot(new Date());
             const rawDefaultPath = `UAB%20Mok%C4%97tojas/000007/MRSF-0001/IT%20paslaugos:1:val.:55/${todayStr}:10/0`;
             return `#/${encodeBase64Url(rawDefaultPath)}`;
         }
 
-        /**
-         * Parses a date string (supports YYYY.MM.DD, YYYY-MM-DD, YYYY/MM/DD).
-         * Falls back to today's date if empty or invalid.
-         */
         function parseInvoiceDate(dateStr) {
             if (!dateStr || !dateStr.trim()) {
                 return new Date();
@@ -678,29 +634,18 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
             return new Date();
         }
 
-        /**
-         * Adds a specified number of calendar days to a Date object
-         */
         function addDays(dateObj, days) {
             const result = new Date(dateObj.getTime());
             result.setDate(result.getDate() + days);
             return result;
         }
 
-        /**
-         * Helper to check if a string represents a valid finite number
-         */
         function isNumericPart(str) {
             if (str === undefined || str === null || str.trim() === '') return false;
             const n = Number(str.trim().replace(',', '.'));
             return !isNaN(n) && isFinite(n);
         }
 
-        /**
-         * Parses a single item entry string.
-         * Primary format: preke arba paslauga:kiekis:mato vnt(be tasko arba su):kaina
-         * Also supports legacy format: preke:kaina:kiekis
-         */
         function parseSingleItem(rawItemStr) {
             const parts = (rawItemStr || '').split(':');
             let name = 'IT paslaugos';
@@ -713,7 +658,6 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
                 isNumericPart(parts[parts.length - 1]) &&
                 isNumericPart(parts[parts.length - 3])
             ) {
-                // Format: pavadinimas : kiekis : mato_vnt : kaina
                 unitPrice = parseFloat(parts[parts.length - 1].trim().replace(',', '.'));
                 unit = normalizeUnit(parts[parts.length - 2]);
                 quantity = parseFloat(parts[parts.length - 3].trim().replace(',', '.'));
@@ -723,7 +667,6 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
                 isNumericPart(parts[parts.length - 1]) &&
                 isUnitToken(parts[parts.length - 2])
             ) {
-                // Format without explicit quantity: pavadinimas : mato_vnt : kaina
                 unitPrice = parseFloat(parts[parts.length - 1].trim().replace(',', '.'));
                 unit = normalizeUnit(parts[parts.length - 2]);
                 quantity = 1;
@@ -733,7 +676,6 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
                 isNumericPart(parts[parts.length - 1]) &&
                 isNumericPart(parts[parts.length - 2])
             ) {
-                // Legacy format: pavadinimas : kaina : kiekis
                 quantity = parseFloat(parts[parts.length - 1].trim().replace(',', '.'));
                 unitPrice = parseFloat(parts[parts.length - 2].trim().replace(',', '.'));
                 unit = 'val.';
@@ -762,9 +704,6 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
             };
         }
 
-        /**
-         * Extracts the hash path from window.location.hash
-         */
         function extractRawHashFromLocation() {
             if (window.location.hash && window.location.hash.length > 1) {
                 return window.location.hash;
@@ -772,19 +711,10 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
             return getDefaultHash();
         }
 
-        /**
-         * Parses the hash string into structured invoice fields.
-         * Supports BOTH:
-         * 1. Encoded URL-safe Base64: #/{koduotas-tekstas}
-         * 2. Plain slash parameters:
-         *    #/{pirkejas}/{imones_kodas}:{pvm_kodas}/{sf_nr}/{preke}:{kiekis}:{mato_vnt}:{kaina}/{data}:{apmokejimo_terminas}/{avansas}
-         *    Multiple items in segment 4 can be separated by ';'
-         */
         function parseInvoiceHash(rawHash) {
             const hashToUse = (rawHash && rawHash.trim().length > 1) ? rawHash.trim() : getDefaultHash();
             let cleanPath = hashToUse.replace(/^#\/?/, '');
 
-            // Check if the hash is a single Base64URL encoded payload
             const decodedPayload = tryDecodeBase64Url(cleanPath);
             if (decodedPayload) {
                 cleanPath = decodedPayload.replace(/^#\/?/, '');
@@ -792,10 +722,8 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
 
             const segments = cleanPath.split('/');
 
-            // 1. Pirkėjas (default: UAB Mokėtojas)
             const buyerName = decodeSegment(segments[0]) || 'UAB Mokėtojas';
 
-            // 2. Įmonės kodas : PVM kodas (PVM kodas optional, default code: 000007)
             const hasCodesSegment = segments[1] !== undefined && segments[1] !== '';
             const codesSegment = hasCodesSegment ? decodeSegment(segments[1]) : '000007';
             let buyerCode = '';
@@ -809,10 +737,8 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
                 buyerVat = '';
             }
 
-            // 3. SF numeris (default: MRSF-0001)
             const sfNr = decodeSegment(segments[2]) || 'MRSF-0001';
 
-            // 4. Prekės / paslaugos (gali būti kelios eilutės atskirtos ';')
             const serviceSegment = decodeSegment(segments[3]) || '';
             const rawItemEntries = serviceSegment
                 .split(';')
@@ -823,7 +749,6 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
                 ? rawItemEntries.map(parseSingleItem)
                 : [parseSingleItem('')];
 
-            // 5. Data : Apmokėjimo terminas dienomis (jei nenurodyta - šiandien ir 10 d.)
             const dateSegment = decodeSegment(segments[4]) || '';
             let dateRaw = '';
             let termDays = 10;
@@ -843,7 +768,6 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
             const formattedDate = formatDateDot(invoiceDateObj);
             const formattedDueDate = formatDateDot(dueDateObj);
 
-            // 6. Sumokėta avansu (paskutinis parametras)
             const advanceSegment = decodeSegment(segments[5]);
             let advanceAmount = 0;
             if (advanceSegment !== undefined && advanceSegment !== '') {
@@ -853,7 +777,6 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
                 }
             }
 
-            // Skaičiavimai
             const totalAmount = items.reduce((sum, item) => sum + item.lineTotal, 0);
             const payableAmount = totalAmount - advanceAmount;
 
@@ -872,21 +795,15 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
             };
         }
 
-        /**
-         * Renders the parsed invoice object into the DOM and syncs the edit form & payment button
-         */
         function renderInvoice(data) {
             currentInvoiceState = data;
 
-            // Update page title for clean PDF/Print filenames
             document.title = `Sąskaita - faktūra | ${data.sfNr}`;
 
-            // Header fields
             document.getElementById('invNumber').textContent = data.sfNr;
             document.getElementById('invDate').textContent = data.formattedDate;
             document.getElementById('invDueDate').textContent = data.formattedDueDate;
 
-            // Buyer fields
             document.getElementById('buyerName').textContent = data.buyerName;
 
             const codeRow = document.getElementById('buyerCodeRow');
@@ -897,7 +814,6 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
                 codeRow.style.display = 'none';
             }
 
-            // Hide PVM mokėtojo kodas row completely if not provided
             const vatRow = document.getElementById('buyerVatRow');
             if (data.buyerVat) {
                 vatRow.style.display = '';
@@ -906,7 +822,6 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
                 vatRow.style.display = 'none';
             }
 
-            // Render dynamic service/product rows with auto-generated line numbers
             const tbody = document.getElementById('invoiceItemsBody');
             tbody.innerHTML = '';
 
@@ -951,25 +866,19 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
             const advanceFormatted = data.advanceAmount.toFixed(2);
             const payableFormatted = data.payableAmount.toFixed(2);
 
-            // Totals summary
             document.getElementById('totalGross').textContent = `€ ${totalFormatted}`;
             document.getElementById('totalAdvance').textContent = `€ ${advanceFormatted}`;
             document.getElementById('totalPayable').textContent = `€ ${payableFormatted}`;
 
-            // Update Sticky "Apmokėti" button href (uses SF%20 prefix)
             const payUrl = `https://pavedimu.lt/mindaugas/SF%20${encodeURIComponent(data.sfNr)}/${encodeURIComponent(payableFormatted)}/`;
             const btnPayTransfer = document.getElementById('btnPayTransfer');
             if (btnPayTransfer) {
                 btnPayTransfer.href = payUrl;
             }
 
-            // Populate Edit Form inputs with current state
             populateEditForm(data);
         }
 
-        /**
-         * Creates a single editable item row element for the edit form (default unit: 'val.')
-         */
         function createItemRowElement(item = { name: '', quantity: 1, unit: 'val.', unitPrice: '' }) {
             const row = document.createElement('div');
             row.className = 'item-edit-row grid grid-cols-1 sm:grid-cols-12 gap-2 items-end bg-slate-50 sm:bg-transparent p-2.5 sm:p-0 rounded-md border border-slate-200 sm:border-none';
@@ -1023,9 +932,6 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
             return row;
         }
 
-        /**
-         * Disables the remove button when only 1 item row remains
-         */
         function updateRemoveButtonsState() {
             const container = document.getElementById('editItemsContainer');
             const rows = container.querySelectorAll('.item-edit-row');
@@ -1039,9 +945,6 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
             });
         }
 
-        /**
-         * Populates the collapsible edit form fields with current invoice data
-         */
         function populateEditForm(data) {
             document.getElementById('editBuyerName').value = data.buyerName || '';
             document.getElementById('editBuyerCode').value = data.buyerCode || '';
@@ -1065,9 +968,6 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
             updateRemoveButtonsState();
         }
 
-        /**
-         * Clears all fields in the edit form for a brand-new invoice entry
-         */
         function clearEditForm() {
             document.getElementById('editBuyerName').value = '';
             document.getElementById('editBuyerCode').value = '';
@@ -1085,9 +985,6 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
             document.getElementById('editBuyerName').focus();
         }
 
-        /**
-         * Builds the new URL-safe Base64 hash (#/koduotas-tekstas) from the edit form inputs
-         */
         function buildHashFromForm() {
             const buyerName = document.getElementById('editBuyerName').value.trim() || 'UAB Mokėtojas';
             const buyerCode = document.getElementById('editBuyerCode').value.trim();
@@ -1104,7 +1001,6 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
             const advRaw = document.getElementById('editAdvance').value.trim().replace(',', '.');
             const advVal = advRaw !== '' && !isNaN(parseFloat(advRaw)) && parseFloat(advRaw) > 0 ? parseFloat(advRaw) : 0;
 
-            // Collect dynamic items
             const rows = document.querySelectorAll('#editItemsContainer .item-edit-row');
             const encodedItems = [];
 
@@ -1116,30 +1012,18 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
                 const priceRaw = row.querySelector('.item-price-input').value.trim().replace(',', '.');
                 const priceVal = priceRaw !== '' && !isNaN(parseFloat(priceRaw)) ? parseFloat(priceRaw) : 55;
 
-                // Format: preke arba paslauga:kiekis:mato vnt:kaina
                 encodedItems.push(
                     `${encodeURIComponent(name)}:${encodeURIComponent(String(qtyVal))}:${encodeURIComponent(unitVal)}:${encodeURIComponent(String(priceVal))}`
                 );
             });
 
-            // Segment 1: Pirkėjas
             const seg1 = encodeURIComponent(buyerName);
-
-            // Segment 2: Įmonės kodas : PVM kodas
             const seg2 = buyerVat
                 ? `${encodeURIComponent(buyerCode)}:${encodeURIComponent(buyerVat)}`
                 : encodeURIComponent(buyerCode);
-
-            // Segment 3: SF Nr
             const seg3 = encodeURIComponent(sfNr);
-
-            // Segment 4: Prekė arba paslauga : kiekis : mato vnt : kaina (kelios eilutės atskirtos ';')
             const seg4 = encodedItems.join(';');
-
-            // Segment 5: Data : terminas
             const seg5 = `${encodeURIComponent(dateFormatted)}:${encodeURIComponent(String(termVal))}`;
-
-            // Segment 6: Avansas
             const seg6 = encodeURIComponent(String(advVal));
 
             const rawPath = `${seg1}/${seg2}/${seg3}/${seg4}/${seg5}/${seg6}`;
@@ -1149,7 +1033,7 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
         }
 
         /**
-         * Aptinka, ar nuoroda atidaryta per Messenger, Facebook, Instagram vidinę naršyklę
+         * Patikrina, ar puslapis atidarytas vidinėje Messenger / Facebook / Instagram naršyklėje
          */
         function isInAppBrowser() {
             const ua = navigator.userAgent || navigator.vendor || window.opera || '';
@@ -1157,87 +1041,55 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
         }
 
         /**
-         * Bando atidaryti dabartinę sąskaitos nuorodą išorinėje telefono naršyklėje (Chrome / Safari)
+         * Jei vidinė naršyklė blokuoja tiesioginį atsisiuntimą, tyliai perduoda nuorodą su ?dl=1
+         * į sisteminę telefono naršyklę, kuri atsidariusi automatiškai pradeda atsisiuntimą.
          */
-        function openInExternalBrowser() {
-            const targetUrl = window.location.href;
+        function handoffAutoDownloadToSystemBrowser() {
+            const urlObj = new URL(window.location.href);
+            urlObj.searchParams.set('dl', '1');
+            const targetUrl = urlObj.toString();
             const ua = navigator.userAgent || '';
 
-            // 1. Android: Intent schema tiesiogiai atidaro numatytąją naršyklę (pvz. Chrome)
             if (/Android/i.test(ua)) {
                 const cleanUrl = targetUrl.replace(/^https?:\/\//i, '');
                 window.location.href = `intent://${cleanUrl}#Intent;scheme=https;S.browser_fallback_url=${encodeURIComponent(targetUrl)};end`;
                 return;
             }
 
-            // 2. iOS (iPhone / iPad): x-safari-https schema iškviečia gimtąjį „Open in Safari?“ langą
             if (/iPhone|iPad|iPod/i.test(ua)) {
                 window.location.href = targetUrl.replace(/^https?:\/\//i, 'x-safari-https://');
                 return;
             }
 
-            // 3. Atsarginis variantas kitiems įrenginiams
             window.open(targetUrl, '_blank');
         }
 
         /**
-         * Parodo Messenger įspėjimą ir trumpai jį paryškina, jei vartotojas spaudė PDF arba Spausdinti
+         * Sugeneruoja ir tiesiogiai atsiunčia 1 puslapio A4 PDF failą (veikia ir įprastose naršyklėse, ir per Messenger)
          */
-        function showMessengerNoticeAndRedirect() {
-            const notice = document.getElementById('messengerNotice');
-            if (notice) {
-                notice.classList.remove('hidden');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-            openInExternalBrowser();
-        }
-        
-        /**
-         * Generates a single-page A4 PDF with 18mm margins and opens it in a new browser tab
-         */
-        async function openPdfInNewTab() {
-            const btnPdf = document.getElementById('btnPdf');
+        async function downloadInvoicePdf() {
+            const btnDownload = document.getElementById('btnDownload');
             const invoiceEl = document.getElementById('invoiceDocument');
-            const sfNr = document.getElementById('invNumber').textContent.trim() || 'Saskaita';
+            const sfNr = (document.getElementById('invNumber').textContent || 'Saskaita').trim();
+            const fileName = `${sfNr}.pdf`;
+            const ua = navigator.userAgent || '';
 
-            // Open a blank tab synchronously on user click to prevent popup blockers
-            const newTab = window.open('', '_blank');
-            if (newTab) {
-                newTab.document.write(`
-                    <!DOCTYPE html>
-                    <html lang="lt">
-                    <head>
-                        <meta charset="UTF-8">
-                        <title>${sfNr}.pdf — Generuojama...</title>
-                        <style>
-                            body {
-                                margin: 0;
-                                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-                                background: #f8fafc;
-                                color: #334155;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                height: 100vh;
-                                font-size: 14px;
-                            }
-                        </style>
-                    </head>
-                    <body>Paruošiamas PDF dokumentas (${sfNr}.pdf)...</body>
-                    </html>
-                `);
+            // Android vidinė Messenger naršyklė blokuoja blob: failų atsisiuntimą,
+            // todėl iškart tyliai perduodame nuorodą su ?dl=1 į sisteminę naršyklę automatiniam atsisiuntimui
+            if (isInAppBrowser() && /Android/i.test(ua)) {
+                handoffAutoDownloadToSystemBrowser();
+                return;
             }
 
-            const originalBtnHtml = btnPdf.innerHTML;
-            btnPdf.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Ruošiamas PDF...</span>';
-            btnPdf.disabled = true;
+            const originalBtnHtml = btnDownload.innerHTML;
+            btnDownload.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Ruošiama...</span>';
+            btnDownload.disabled = true;
 
-            // Apply clean PDF export layout so html2pdf's 18mm margins are used without double-padding or page overflow
             invoiceEl.classList.add('pdf-export-mode');
 
             const opt = {
                 margin: [18, 18, 18, 18],
-                filename: `${sfNr}.pdf`,
+                filename: fileName,
                 image: { type: 'jpeg', quality: 0.98 },
                 pagebreak: { mode: ['avoid-all'] },
                 html2canvas: {
@@ -1257,53 +1109,78 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
                 const worker = html2pdf().set(opt).from(invoiceEl).toPdf();
                 const pdf = await worker.get('pdf');
 
-                // Guarantee single page (remove any trailing blank page if generated)
                 while (pdf.internal.getNumberOfPages() > 1) {
                     pdf.deletePage(pdf.internal.getNumberOfPages());
                 }
 
                 const pdfBlob = await worker.output('blob');
-                const blobUrl = URL.createObjectURL(pdfBlob);
 
-                if (newTab && !newTab.closed) {
-                    newTab.location.replace(blobUrl);
-                } else {
-                    window.open(blobUrl, '_blank');
+                // Jei atidaryta iOS Messenger / Instagram vidinėje naršyklėje – iškviečiame gimtąjį iOS failo išsaugojimo langą
+                if (isInAppBrowser() && typeof File !== 'undefined' && navigator.canShare) {
+                    const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
+                    if (navigator.canShare({ files: [pdfFile] })) {
+                        try {
+                            await navigator.share({
+                                files: [pdfFile],
+                                title: fileName
+                            });
+                            return;
+                        } catch (shareErr) {
+                            if (shareErr && shareErr.name === 'AbortError') {
+                                return;
+                            }
+                            handoffAutoDownloadToSystemBrowser();
+                            return;
+                        }
+                    }
                 }
+
+                // Jei vis dar vidinėje naršyklėje be Web Share palaikymo – perduodame sisteminei naršyklei
+                if (isInAppBrowser()) {
+                    handoffAutoDownloadToSystemBrowser();
+                    return;
+                }
+
+                // Standartinis tiesioginis atsisiuntimas į įrenginį
+                const blobUrl = URL.createObjectURL(pdfBlob);
+                const link = document.createElement('a');
+                link.href = blobUrl;
+                link.download = fileName;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                setTimeout(() => URL.revokeObjectURL(blobUrl), 15000);
             } catch (error) {
-                console.error('PDF generation failed:', error);
-                if (newTab && !newTab.closed) {
-                    newTab.close();
-                }
+                console.error('PDF atsisiuntimo klaida:', error);
             } finally {
                 invoiceEl.classList.remove('pdf-export-mode');
-                btnPdf.innerHTML = originalBtnHtml;
-                btnPdf.disabled = false;
+                btnDownload.innerHTML = originalBtnHtml;
+                btnDownload.disabled = false;
             }
         }
 
         // Initialize Event Listeners on DOM Ready
         window.addEventListener('DOMContentLoaded', () => {
-            // Set default encoded hash if empty so URL bar immediately reflects structure
             if (!window.location.hash || window.location.hash.length <= 1) {
                 try {
                     window.history.replaceState(null, '', getDefaultHash());
                 } catch (e) {}
             }
 
-            // 1. Initial parse from URL hash (supports both encoded Base64URL and plain slash segments)
+            // 1. Initial parse from URL hash
             const initialHash = extractRawHashFromLocation();
             const invoiceData = parseInvoiceHash(initialHash);
             renderInvoice(invoiceData);
 
-            // 2. Add New Item Row button in Edit Form (default unit: 'val.')
+            // 2. Add New Item Row button in Edit Form
             document.getElementById('btnAddItemRow').addEventListener('click', () => {
                 const container = document.getElementById('editItemsContainer');
                 container.appendChild(createItemRowElement({ name: '', quantity: 1, unit: 'val.', unitPrice: '' }));
                 updateRemoveButtonsState();
             });
 
-            // 3. Clear Form button -> Clears all fields for new input
+            // 3. Clear Form button
             document.getElementById('btnClearEdit').addEventListener('click', () => {
                 clearEditForm();
             });
@@ -1328,7 +1205,7 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
                 if (payBtnContainer) payBtnContainer.classList.remove('hidden');
             });
 
-            // 6. Submit Edit Form -> Update Hash to #/koduotas-tekstas & Re-render
+            // 6. Submit Edit Form
             editFormPanel.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const newHash = buildHashFromForm();
@@ -1339,35 +1216,30 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
                 if (payBtnContainer) payBtnContainer.classList.remove('hidden');
             });
 
-            // Jei atidaryta per Messenger – iškart parodome informacinę juostą viršuje
-            if (isInAppBrowser()) {
-                const notice = document.getElementById('messengerNotice');
-                if (notice) notice.classList.remove('hidden');
-            }
-
-            // 7. Print button -> Jei Messenger, permeta į išorinę naršyklę; jei įprasta naršyklė -> window.print()
-            document.getElementById('btnPrint').addEventListener('click', () => {
-                if (isInAppBrowser()) {
-                    showMessengerNoticeAndRedirect();
-                    return;
-                }
-                window.print();
+            // 7. Download button ("Atsisiųsti")
+            document.getElementById('btnDownload').addEventListener('click', () => {
+                downloadInvoicePdf();
             });
 
-            // 8. PDF button -> Jei Messenger, nekuriame tuščio lango ir permetame į naršyklę; kitaip -> openPdfInNewTab()
-            document.getElementById('btnPdf').addEventListener('click', () => {
-                if (isInAppBrowser()) {
-                    showMessengerNoticeAndRedirect();
-                    return;
-                }
-                openPdfInNewTab();
-            });
-
-            // 9. Listen for manual hash changes in browser address bar
+            // 8. Listen for manual hash changes in browser address bar
             window.addEventListener('hashchange', () => {
                 const parsed = parseInvoiceHash(extractRawHashFromLocation());
                 renderInvoice(parsed);
             });
+
+            // 9. Jei puslapis buvo automatiškai permestas iš Messenger su ?dl=1 – iškart atsiunčiame PDF ir išvalome URL
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('dl') === '1' && !isInAppBrowser()) {
+                try {
+                    const cleanUrl = new URL(window.location.href);
+                    cleanUrl.searchParams.delete('dl');
+                    window.history.replaceState(null, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
+                } catch (e) {}
+
+                setTimeout(() => {
+                    downloadInvoicePdf();
+                }, 250);
+            }
         });
     </script>
 </body>
