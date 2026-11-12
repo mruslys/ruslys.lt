@@ -367,7 +367,11 @@ layout: default
                 </div>
 
                 <!-- Form Action Buttons (Centered on Mobile, Right on Desktop) -->
-                <div class="flex items-center justify-center sm:justify-end gap-2 mt-4 pt-2.5 border-t border-slate-100">
+                <div class="flex flex-wrap items-center justify-center sm:justify-end gap-2 mt-4 pt-2.5 border-t border-slate-100">
+                    <button type="button" id="btnClearEdit" class="action-btn text-slate-600 hover:text-red-600 hover:border-red-300" title="Išvalyti visus laukus naujam įvedimui">
+                        <i class="fa-solid fa-eraser"></i>
+                        <span>Išvalyti</span>
+                    </button>
                     <button type="button" id="btnCancelEdit" class="action-btn">
                         <i class="fa-solid fa-xmark"></i>
                         <span>Atšaukti</span>
@@ -445,7 +449,7 @@ layout: default
                             <td class="text-center">1</td>
                             <td class="text-left">IT paslaugos</td>
                             <td class="text-right">1</td>
-                            <td class="text-left">vnt.</td>
+                            <td class="text-left">val.</td>
                             <td class="text-right whitespace-nowrap">€ 55.00</td>
                             <td class="text-right whitespace-nowrap">€ 55.00</td>
                         </tr>
@@ -483,6 +487,7 @@ layout: default
             <!-- Sticky Bottom Payment Button (Inside white invoice sheet, below issued-by line) -->
             <div id="payBtnContainer" class="no-print sticky bottom-5 z-10 mt-10 flex justify-center w-full pointer-events-none" data-html2canvas-ignore="true">
                 <a id="btnPayTransfer" href="https://pavedimu.lt/mindaugas/SF%20MRSF-0001/55.00/" target="_blank" rel="noopener noreferrer" class="pay-btn pointer-events-auto">
+                    <i class="fa-solid fa-money-bill-transfer"></i>
                     <span>Apmokėti</span>
                 </a>
             </div>
@@ -510,12 +515,12 @@ layout: default
          * Normalizes unit of measurement (with or without dot) to standard display format: 'vnt.', 'val.', 'mėn.'
          */
         function normalizeUnit(rawUnit) {
-            if (!rawUnit) return 'vnt.';
+            if (!rawUnit) return 'val.';
             const cleaned = rawUnit.trim().toLowerCase().replace(/\.+$/, '');
             if (cleaned === 'val') return 'val.';
             if (cleaned === 'mėn' || cleaned === 'men') return 'mėn.';
             if (cleaned === 'vnt') return 'vnt.';
-            return 'vnt.';
+            return 'val.';
         }
 
         /**
@@ -584,7 +589,7 @@ layout: default
          */
         function getDefaultHash() {
             const todayStr = formatDateDot(new Date());
-            const rawDefaultPath = `UAB%20Mok%C4%97tojas/000007/MRSF-0001/IT%20paslaugos:1:vnt.:55/${todayStr}:10/0`;
+            const rawDefaultPath = `UAB%20Mok%C4%97tojas/000007/MRSF-0001/IT%20paslaugos:1:val.:55/${todayStr}:10/0`;
             return `#/${encodeBase64Url(rawDefaultPath)}`;
         }
 
@@ -637,7 +642,7 @@ layout: default
             const parts = (rawItemStr || '').split(':');
             let name = 'IT paslaugos';
             let quantity = 1;
-            let unit = 'vnt.';
+            let unit = 'val.';
             let unitPrice = 55;
 
             if (
@@ -668,7 +673,7 @@ layout: default
                 // Legacy format: pavadinimas : kaina : kiekis
                 quantity = parseFloat(parts[parts.length - 1].trim().replace(',', '.'));
                 unitPrice = parseFloat(parts[parts.length - 2].trim().replace(',', '.'));
-                unit = 'vnt.';
+                unit = 'val.';
                 name = parts.slice(0, -2).join(':').trim() || 'IT paslaugos';
             } else if (
                 parts.length >= 2 &&
@@ -676,7 +681,7 @@ layout: default
             ) {
                 unitPrice = parseFloat(parts[parts.length - 1].trim().replace(',', '.'));
                 quantity = 1;
-                unit = 'vnt.';
+                unit = 'val.';
                 name = parts.slice(0, -1).join(':').trim() || 'IT paslaugos';
             } else if (rawItemStr && rawItemStr.trim()) {
                 name = rawItemStr.trim();
@@ -900,13 +905,13 @@ layout: default
         }
 
         /**
-         * Creates a single editable item row element for the edit form
+         * Creates a single editable item row element for the edit form (default unit: 'val.')
          */
-        function createItemRowElement(item = { name: '', quantity: 1, unit: 'vnt.', unitPrice: '' }) {
+        function createItemRowElement(item = { name: '', quantity: 1, unit: 'val.', unitPrice: '' }) {
             const row = document.createElement('div');
             row.className = 'item-edit-row grid grid-cols-1 sm:grid-cols-12 gap-2 items-end bg-slate-50 sm:bg-transparent p-2.5 sm:p-0 rounded-md border border-slate-200 sm:border-none';
 
-            const normalizedUnit = normalizeUnit(item.unit);
+            const normalizedUnit = normalizeUnit(item.unit || 'val.');
 
             row.innerHTML = `
                 <div class="sm:col-span-5">
@@ -988,13 +993,33 @@ layout: default
 
             const itemsToRender = (data.items && data.items.length > 0)
                 ? data.items
-                : [{ name: 'IT paslaugos', quantity: 1, unit: 'vnt.', unitPrice: 55 }];
+                : [{ name: 'IT paslaugos', quantity: 1, unit: 'val.', unitPrice: 55 }];
 
             itemsToRender.forEach((item) => {
                 container.appendChild(createItemRowElement(item));
             });
 
             updateRemoveButtonsState();
+        }
+
+        /**
+         * Clears all fields in the edit form for a brand-new invoice entry
+         */
+        function clearEditForm() {
+            document.getElementById('editBuyerName').value = '';
+            document.getElementById('editBuyerCode').value = '';
+            document.getElementById('editBuyerVat').value = '';
+            document.getElementById('editSfNr').value = '';
+            document.getElementById('editDate').value = '';
+            document.getElementById('editTerm').value = '';
+            document.getElementById('editAdvance').value = '';
+
+            const container = document.getElementById('editItemsContainer');
+            container.innerHTML = '';
+            container.appendChild(createItemRowElement({ name: '', quantity: '', unit: 'val.', unitPrice: '' }));
+            updateRemoveButtonsState();
+
+            document.getElementById('editBuyerName').focus();
         }
 
         /**
@@ -1164,14 +1189,19 @@ layout: default
             const invoiceData = parseInvoiceHash(initialHash);
             renderInvoice(invoiceData);
 
-            // 2. Add New Item Row button in Edit Form
+            // 2. Add New Item Row button in Edit Form (default unit: 'val.')
             document.getElementById('btnAddItemRow').addEventListener('click', () => {
                 const container = document.getElementById('editItemsContainer');
-                container.appendChild(createItemRowElement({ name: '', quantity: 1, unit: 'vnt.', unitPrice: '' }));
+                container.appendChild(createItemRowElement({ name: '', quantity: 1, unit: 'val.', unitPrice: '' }));
                 updateRemoveButtonsState();
             });
 
-            // 3. Toggle Edit Form Panel
+            // 3. Clear Form button -> Clears all fields for new input
+            document.getElementById('btnClearEdit').addEventListener('click', () => {
+                clearEditForm();
+            });
+
+            // 4. Toggle Edit Form Panel
             const editFormPanel = document.getElementById('editFormPanel');
             const payBtnContainer = document.getElementById('payBtnContainer');
             document.getElementById('btnToggleEdit').addEventListener('click', () => {
@@ -1185,13 +1215,13 @@ layout: default
                 }
             });
 
-            // 4. Cancel Edit button
+            // 5. Cancel Edit button
             document.getElementById('btnCancelEdit').addEventListener('click', () => {
                 editFormPanel.classList.add('hidden');
                 if (payBtnContainer) payBtnContainer.classList.remove('hidden');
             });
 
-            // 5. Submit Edit Form -> Update Hash to #/koduotas-tekstas & Re-render
+            // 6. Submit Edit Form -> Update Hash to #/koduotas-tekstas & Re-render
             editFormPanel.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const newHash = buildHashFromForm();
@@ -1202,17 +1232,17 @@ layout: default
                 if (payBtnContainer) payBtnContainer.classList.remove('hidden');
             });
 
-            // 6. Print button -> Native browser print dialog
+            // 7. Print button -> Native browser print dialog
             document.getElementById('btnPrint').addEventListener('click', () => {
                 window.print();
             });
 
-            // 7. PDF button -> Generate & open PDF in new tab
+            // 8. PDF button -> Generate & open PDF in new tab
             document.getElementById('btnPdf').addEventListener('click', () => {
                 openPdfInNewTab();
             });
 
-            // 8. Listen for manual hash changes in browser address bar
+            // 9. Listen for manual hash changes in browser address bar
             window.addEventListener('hashchange', () => {
                 const parsed = parseInvoiceHash(extractRawHashFromLocation());
                 renderInvoice(parsed);
