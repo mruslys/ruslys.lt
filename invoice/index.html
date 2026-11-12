@@ -321,17 +321,7 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs leading-relaxed">
         <div style="color: var(--amber-accent);">
             <i class="fa-solid fa-circle-info mr-1"></i>
-            <strong>Sąskaita atidaryta per „Messenger“.</strong> Ši programėlė neleidžia tiesiogiai atsisiųsti PDF ar spausdinti. Norėdami išsisaugoti arba atsispausdinti sąskaitą, atidarykite ją savo telefono naršyklėje (arba spauskite kampe <strong>•••</strong> ir pasirinkite <em>Atidaryti išorinėje naršyklėje</em>).
-        </div>
-        <div class="flex items-center gap-2 shrink-0">
-            <button type="button" id="btnOpenExternal" class="action-btn text-xs py-1 px-2.5" style="border-color: var(--amber-accent); color: var(--amber-accent);">
-                <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                <span>Atidaryti naršyklėje</span>
-            </button>
-            <button type="button" id="btnCopyUrl" class="action-btn text-xs py-1 px-2.5 text-slate-600" title="Kopijuoti sąskaitos nuorodą">
-                <i class="fa-regular fa-copy"></i>
-                <span id="copyUrlText">Kopijuoti nuorodą</span>
-            </button>
+            <strong>Sąskaita atidaryta per „Messenger“.</strong> Ši programėlė neleidžia tiesiogiai atsisiųsti PDF ar spausdinti. Norėdami išsisaugoti arba atsispausdinti sąskaitą, atidarykite ją savo telefoėje.
         </div>
     </div>
 </div>
@@ -1321,30 +1311,6 @@ if (isInAppBrowser()) {
     if (notice) notice.classList.remove('hidden');
 }
 
-// Mygtukas „Atidaryti naršyklėje“
-const btnOpenExternal = document.getElementById('btnOpenExternal');
-if (btnOpenExternal) {
-    btnOpenExternal.addEventListener('click', () => {
-        openInExternalBrowser();
-    });
-}
-
-// Mygtukas „Kopijuoti nuorodą“ (jei senesnis iOS blokuotų automatinį perėjimą)
-const btnCopyUrl = document.getElementById('btnCopyUrl');
-if (btnCopyUrl) {
-    btnCopyUrl.addEventListener('click', async () => {
-        const copyTextEl = document.getElementById('copyUrlText');
-        try {
-            await navigator.clipboard.writeText(window.location.href);
-            if (copyTextEl) copyTextEl.textContent = 'Nukopijuota!';
-            setTimeout(() => {
-                if (copyTextEl) copyTextEl.textContent = 'Kopijuoti nuorodą';
-            }, 2000);
-        } catch (err) {
-            prompt('Nusikopijuokite sąskaitos nuorodą:', window.location.href);
-        }
-    });
-}
 
 // 7. Print button -> Jei Messenger, permeta į išorinę naršyklę; jei įprasta naršyklė -> window.print()
 document.getElementById('btnPrint').addEventListener('click', () => {
