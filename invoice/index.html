@@ -138,33 +138,31 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
             transform: translateY(0.5px);
         }
 
-        /* Sticky Bottom Payment Button (Slightly enlarged) */
+        /* Top Bar Primary Payment Button (Black solid style matching action-btn geometry) */
         .pay-btn {
             background: #0f172a;
             color: #ffffff;
             border: 1px solid #0f172a;
-            padding: 13px 30px;
-            font-size: 15.5px;
-            font-weight: 600;
-            border-radius: 9999px;
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: 6px;
             display: inline-flex;
             align-items: center;
-            gap: 9px;
+            gap: 7px;
             text-decoration: none;
-            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.25), 0 4px 10px -2px rgba(15, 23, 42, 0.15);
-            transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+            cursor: pointer;
+            transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
         }
 
         .pay-btn:hover {
             background: var(--amber-accent);
             border-color: var(--amber-accent);
             color: #ffffff;
-            transform: translateY(-1px);
-            box-shadow: 0 12px 28px -5px rgba(217, 119, 6, 0.35);
         }
 
         .pay-btn:active {
-            transform: translateY(0);
+            transform: translateY(0.5px);
         }
 
         /* Form Input Styling */
@@ -328,9 +326,10 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
     <header class="no-print border-b border-slate-200 bg-white/95 backdrop-blur-sm sticky top-0 z-50" data-html2canvas-ignore="true">
         <div class="max-w-[210mm] mx-auto px-4 py-2.5 flex flex-col gap-3">
             
-            <!-- Primary Row: 2 Action Buttons (Centered on Mobile, Right on Desktop) -->
+            <!-- Primary Row: Action Buttons (Centered on Mobile, Right on Desktop) -->
             <div class="flex items-center justify-center sm:justify-end gap-2.5">
-                <button type="button" id="btnToggleEdit" class="action-btn" title="Koreguoti sąskaitos duomenis">
+                <!-- Hidden by default; revealed via triple-click on invoice sheet or Ctrl+E / Cmd+E -->
+                <button type="button" id="btnToggleEdit" class="action-btn hidden" title="Koreguoti sąskaitos duomenis">
                     <i class="fa-regular fa-pen-to-square"></i>
                     <span>Koreguoti</span>
                 </button>
@@ -339,6 +338,11 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
                     <i class="fa-solid fa-download"></i>
                     <span>Atsisiųsti</span>
                 </button>
+
+                <a id="btnPayTransfer" href="https://pavedimu.lt/mindaugas/SF%20MRSF-0001/55.00/" target="_blank" rel="noopener noreferrer" class="pay-btn" title="Apmokėti sąskaitą">
+                    <i class="fa-solid fa-money-bill-transfer"></i>
+                    <span>Apmokėti</span>
+                </a>
             </div>
             
             <!-- Collapsible Edit Form Panel -->
@@ -440,7 +444,7 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
                 <a href="https://ruslys.lt" class="w512-logo">
                     <img src="https://ruslys.lt/img/m512.png" alt="Logo" crossorigin="anonymous">
                 </a>
-                <h1 class="font-bold inv-title tracking-tight text-black">Sąskaita - faktūra</h1>
+                <h1 id="invTitle" class="font-bold inv-title tracking-tight text-black">Sąskaita - faktūra</h1>
                 <div id="invNumber" class="font-bold inv-number mt-0.5">MRSF-0001</div>
                 <div id="invDate" class="inv-date mt-0.5">2026.11.11</div>
             </section>
@@ -530,14 +534,6 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
                     <span class="font-bold">Sąskaitą suformavo</span> - Mindaugas Ruslys
                 </div>
             </section>
-
-            <!-- Sticky Bottom Payment Button -->
-            <div id="payBtnContainer" class="no-print sticky bottom-5 z-10 mt-10 flex justify-center w-full pointer-events-none" data-html2canvas-ignore="true">
-                <a id="btnPayTransfer" href="https://pavedimu.lt/mindaugas/SF%20MRSF-0001/55.00/" target="_blank" rel="noopener noreferrer" class="pay-btn pointer-events-auto">
-                    <i class="fa-solid fa-money-bill-transfer"></i>
-                    <span>Apmokėti</span>
-                </a>
-            </div>
 
         </article>
     </main>
@@ -1184,24 +1180,65 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
                 clearEditForm();
             });
 
-            // 4. Toggle Edit Form Panel
+            // 4. Toggle & Reveal Edit Form Panel
             const editFormPanel = document.getElementById('editFormPanel');
-            const payBtnContainer = document.getElementById('payBtnContainer');
-            document.getElementById('btnToggleEdit').addEventListener('click', () => {
-                if (editFormPanel.classList.contains('hidden')) {
+            const btnToggleEdit = document.getElementById('btnToggleEdit');
+
+            function toggleEditPanel(forceOpen = null) {
+                const isHidden = editFormPanel.classList.contains('hidden');
+                const shouldOpen = forceOpen !== null ? forceOpen : isHidden;
+
+                btnToggleEdit.classList.remove('hidden');
+
+                if (shouldOpen) {
                     if (currentInvoiceState) populateEditForm(currentInvoiceState);
                     editFormPanel.classList.remove('hidden');
-                    if (payBtnContainer) payBtnContainer.classList.add('hidden');
                 } else {
                     editFormPanel.classList.add('hidden');
-                    if (payBtnContainer) payBtnContainer.classList.remove('hidden');
+                }
+            }
+
+            btnToggleEdit.addEventListener('click', () => {
+                toggleEditPanel();
+            });
+
+            // 4a. Triple-click (or triple-tap) on the invoice sheet to reveal & toggle edit mode
+            const invoiceDoc = document.getElementById('invoiceDocument');
+            let clickCount = 0;
+            let clickTimer = null;
+
+            invoiceDoc.addEventListener('click', (e) => {
+                // Ignoruojame paspaudimus ant logotipo nuorodos
+                if (e.target.closest('a')) return;
+
+                clickCount++;
+                clearTimeout(clickTimer);
+
+                if (clickCount >= 3) {
+                    clickCount = 0;
+                    // Nuimame naršyklės automatinį teksto pažymėjimą po 3 paspaudimų
+                    if (window.getSelection) {
+                        window.getSelection().removeAllRanges();
+                    }
+                    toggleEditPanel();
+                } else {
+                    clickTimer = setTimeout(() => {
+                        clickCount = 0;
+                    }, 500);
+                }
+            });
+
+            // 4b. Keyboard shortcut Ctrl+E / Cmd+E for instant desktop access
+            window.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'e') {
+                    e.preventDefault();
+                    toggleEditPanel();
                 }
             });
 
             // 5. Cancel Edit button
             document.getElementById('btnCancelEdit').addEventListener('click', () => {
                 editFormPanel.classList.add('hidden');
-                if (payBtnContainer) payBtnContainer.classList.remove('hidden');
             });
 
             // 6. Submit Edit Form
@@ -1212,7 +1249,6 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
                 const parsed = parseInvoiceHash(newHash);
                 renderInvoice(parsed);
                 editFormPanel.classList.add('hidden');
-                if (payBtnContainer) payBtnContainer.classList.remove('hidden');
             });
 
             // 7. Download button ("Atsisiųsti")
@@ -1226,8 +1262,12 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
                 renderInvoice(parsed);
             });
 
-            // 9. Jei puslapis buvo automatiškai permestas iš Messenger su ?dl=1 – iškart atsiunčiame PDF ir išvalome URL
+            // 9. URL params check (?edit=1 arba ?dl=1)
             const params = new URLSearchParams(window.location.search);
+            if (params.has('edit')) {
+                toggleEditPanel(true);
+            }
+
             if (params.get('dl') === '1' && !isInAppBrowser()) {
                 try {
                     const cleanUrl = new URL(window.location.href);
