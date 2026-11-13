@@ -1,0 +1,11 @@
+User-agent: *
+Disallow: /invoice/
+
+User-agent: GPTBot
+Disallow: /invoice/
+
+User-agent: OAI-SearchBot
+Disallow: /invoice/
+
+User-agent: Google-Extended
+Disallow: /invoice/
