@@ -350,9 +350,9 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
             
             <!-- Collapsible Edit Form Panel -->
             <form id="editFormPanel" class="hidden pt-3 pb-2 border-t border-slate-200">
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
                     <!-- Pirkėjas -->
-                    <div class="sm:col-span-2 md:col-span-1">
+                    <div>
                         <label for="editBuyerName" class="form-label">Pirkėjas</label>
                         <input type="text" id="editBuyerName" class="form-input" placeholder="UAB Mokėtojas" required>
                     </div>
@@ -367,6 +367,12 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
                     <div>
                         <label for="editBuyerVat" class="form-label">PVM mokėtojo kodas</label>
                         <input type="text" id="editBuyerVat" class="form-input" placeholder="Neprivaloma">
+                    </div>
+
+                    <!-- Pirkėjo adresas -->
+                    <div>
+                        <label for="editBuyerAddress" class="form-label">Pirkėjo adresas</label>
+                        <input type="text" id="editBuyerAddress" class="form-input" placeholder="Neprivaloma">
                     </div>
 
                     <!-- Sąskaitos Nr. -->
@@ -459,6 +465,7 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
                     <div class="font-bold inv-party-heading mb-1">Pardavėjas</div>
                     <div class="font-bold inv-party-heading">Mindaugas Ruslys</div>
                     <div>IV pažymos Nr. 1460396</div>
+                    <div>Adresas: J. Zembrickio g., 4A Klaipėda LT-92224</div>
                     <div>El. p.: m.ruslys@gmail.com</div>
                     <div>Tel.: +37061649775</div>
                     <div>A/s: <span class="font-medium">LT253250020910256736</span></div>
@@ -473,6 +480,9 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
                     </div>
                     <div id="buyerVatRow" style="display: none;">
                         PVM kodas: <span id="buyerVat"></span>
+                    </div>
+                    <div id="buyerAddressRow" style="display: none;">
+                        Adresas: <span id="buyerAddress"></span>
                     </div>
                 </div>
             </section>
@@ -776,6 +786,8 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
                 }
             }
 
+            const buyerAddress = decodeSegment(segments[6]) || '';
+
             const totalAmount = items.reduce((sum, item) => sum + item.lineTotal, 0);
             const payableAmount = totalAmount - advanceAmount;
 
@@ -783,6 +795,7 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
                 buyerName,
                 buyerCode,
                 buyerVat,
+                buyerAddress,
                 sfNr,
                 items,
                 formattedDate,
@@ -819,6 +832,14 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
                 document.getElementById('buyerVat').textContent = data.buyerVat;
             } else {
                 vatRow.style.display = 'none';
+            }
+
+            const addressRow = document.getElementById('buyerAddressRow');
+            if (data.buyerAddress) {
+                addressRow.style.display = '';
+                document.getElementById('buyerAddress').textContent = data.buyerAddress;
+            } else {
+                addressRow.style.display = 'none';
             }
 
             const tbody = document.getElementById('invoiceItemsBody');
@@ -948,6 +969,7 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
             document.getElementById('editBuyerName').value = data.buyerName || '';
             document.getElementById('editBuyerCode').value = data.buyerCode || '';
             document.getElementById('editBuyerVat').value = data.buyerVat || '';
+            document.getElementById('editBuyerAddress').value = data.buyerAddress || '';
             document.getElementById('editSfNr').value = data.sfNr || '';
             document.getElementById('editDate').value = data.formattedDate || '';
             document.getElementById('editTerm').value = data.termDays !== undefined ? data.termDays : 10;
@@ -971,6 +993,7 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
             document.getElementById('editBuyerName').value = '';
             document.getElementById('editBuyerCode').value = '';
             document.getElementById('editBuyerVat').value = '';
+            document.getElementById('editBuyerAddress').value = '';
             document.getElementById('editSfNr').value = '';
             document.getElementById('editDate').value = '';
             document.getElementById('editTerm').value = '';
@@ -988,6 +1011,7 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
             const buyerName = document.getElementById('editBuyerName').value.trim() || 'UAB Mokėtojas';
             const buyerCode = document.getElementById('editBuyerCode').value.trim();
             const buyerVat = document.getElementById('editBuyerVat').value.trim();
+            const buyerAddress = document.getElementById('editBuyerAddress').value.trim();
             const sfNr = document.getElementById('editSfNr').value.trim() || 'MRSF-0001';
 
             const dateRaw = document.getElementById('editDate').value.trim();
@@ -1024,8 +1048,11 @@ description: "Peržiūrėkite sąskaitą faktūrą, patikrinkite duomenis ir pat
             const seg4 = encodedItems.join(';');
             const seg5 = `${encodeURIComponent(dateFormatted)}:${encodeURIComponent(String(termVal))}`;
             const seg6 = encodeURIComponent(String(advVal));
+            const seg7 = encodeURIComponent(buyerAddress);
 
-            const rawPath = `${seg1}/${seg2}/${seg3}/${seg4}/${seg5}/${seg6}`;
+            const rawPath = buyerAddress
+                ? `${seg1}/${seg2}/${seg3}/${seg4}/${seg5}/${seg6}/${seg7}`
+                : `${seg1}/${seg2}/${seg3}/${seg4}/${seg5}/${seg6}`;
             const encodedPayload = encodeBase64Url(rawPath);
 
             return `#/${encodedPayload}`;
